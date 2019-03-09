@@ -1,0 +1,33 @@
+data file type: 2
+
+mesh file
+C:\Works\MagFem\resultsPlunger2D\bun.txt
+
+data folder:
+C:\Works\MagFem\resultsPlunger2D
+
+file name common part:
+disp
+
+temporal: 0,20,1
+
+extension
+txt
+
+animation mode: 1
+
+batch mode: f
+
+timedelay: 300
+
+regions: 
+all
+
+rotstep:0.05
+
+dt:5.55555e-6
+
+node:-1
+comp:1
+.092 0 0
+

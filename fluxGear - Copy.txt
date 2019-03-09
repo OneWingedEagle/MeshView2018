@@ -1,0 +1,31 @@
+data file type: 0
+
+mesh file
+C:\Works\MagFem\fluxesGearF\bun0.txt
+
+data folder:
+C:\Works\MagFem\fluxesGearF
+
+file name common part:
+flux
+
+temporal: 0,360,1
+
+extension
+txt
+
+animation mode: 0
+
+batch mode: t
+
+timedelay: 20
+
+regions: 
+1,2
+
+rotstep:1
+
+dt:5.55e-6
+
+node:0
+comp:0

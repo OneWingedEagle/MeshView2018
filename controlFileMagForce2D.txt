@@ -1,0 +1,33 @@
+data file type: 1
+
+mesh file
+C:\Works\proj8\forces2DMagDistilled\bun.txt
+
+data folder:
+C:\Works\proj8\forces2DMagDistilled
+
+file name common part:
+force
+
+temporal: 0,1799,20
+
+extension
+txt
+
+animation mode: 1
+
+batch mode: f
+
+timedelay: 2
+
+regions: 
+6
+
+rotstep:0.05
+
+dt:5.55555e-6
+
+node:0
+comp:1
+.092 0 0
+
