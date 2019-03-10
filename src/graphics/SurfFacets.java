@@ -65,7 +65,7 @@ public class SurfFacets extends TransformGroup{
 	private RenderingAttributes facetRA,edgeRA,fieldRA;
 	
 	public Arrow[] arrow;
-	private TransformGroup nodeLabels;
+	private TransformGroup nodeLabels,elemLabels;
 	Transform3D[] trans;
 	public int nRegNodes,vectMode;
 	public Vect[] V;
@@ -5351,7 +5351,6 @@ private void setNodeLabels(Model model){
 	
 	nodeLabels=new TransformGroup();
 
-
 	int[] nn=model.getRegNodes(nr);
 	
 	int nNodes=nn.length;
@@ -5365,12 +5364,46 @@ private void setNodeLabels(Model model){
 		trans.setTranslation(new V3f(P));
 		trans.setScale(model.node[nn[j]].minEdgeSize);
 			
-		NodeLabel label=new NodeLabel(nn[j]);
+		IdLabel label=new IdLabel(nn[j]);
 		
 
 		label.setTransform(trans);
 		
 		nodeLabels.addChild(label);
+			
+	}
+
+
+}
+
+private void setElenLabels(Model model){
+	
+	elemLabels=new TransformGroup();
+
+
+//	model.minElemSize=model.getRmax()/10;
+	
+	double size=0;
+	for(int i=model.region[nr].getFirstEl();i<=model.region[nr].getLastEl();i++)
+	{
+		
+		Transform3D trans=new Transform3D();
+		
+		Vect P=model.getElementCenter(i).v3();
+		trans.setTranslation(new V3f(P));
+	
+		if(model.dim==2)
+			size=4*sqrt(model.getElementArea(i));
+		else
+			size=4*pow(model.elementVolume(i),1./3);
+ 		trans.setScale(size);
+			
+ 		IdLabel label=new IdLabel(i);
+		
+
+		label.setTransform(trans);
+		
+		elemLabels.addChild(label);
 			
 	}
 
@@ -5397,5 +5430,27 @@ public void showNodeLables(boolean b){
 
 		
 }
+
+public void showElemLables(boolean b){
+	
+	
+//	if(model.numberOfNodes>1000) return;
+	
+	if(elemLabels==null)	
+		
+		setElenLabels(model);
+
+	if(!this.showRegion) return;
+
+	if(b){
+		this.addChild(elemLabels);
+	}else
+	{
+		this.removeChild(elemLabels);
+	}
+
+		
+}
+
 
 }

@@ -180,7 +180,6 @@ public class Calculator {
 		gradN[6]=new Vect(-(1-b)*(1-c),-(1-a)*(1-c),-(1-a)*(1-b));
 		gradN[7]=new Vect((1-b)*(1-c),-(1+a)*(1-c),-(1+a)*(1-b));
 
-
 		for(int i=0;i<this.nElVert;i++)
 			gradN[i].timesVoid(0.125);
 		return gradN;

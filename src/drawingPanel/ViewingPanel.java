@@ -47,7 +47,7 @@ import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 
 public class ViewingPanel extends JPanel implements ActionListener {
-	public ButtonIcon bShowAxes,bShowMesh,bShowField,bDeform,bAnimation,bShot,bNodeLabel;
+	public ButtonIcon bShowAxes,bShowMesh,bShowField,bDeform,bAnimation,bShot,bNodeLabel,bElemLabel;
 	public Button bLoadMesh, bClear,bNavL, bNavR,bChangeBackground,bRotate,bApplyVscale, 
 	bNavU ,bNavD,bNavZoomIn,bNavZoomOut,bFindValue,bColorChooser;
 	private Button bInfo,bRefresh;
@@ -81,7 +81,7 @@ public class ViewingPanel extends JPanel implements ActionListener {
 	public int decimal = 3, numberOfElements, numberOfRegions;
 	public double  scaleFactor,vScale0=1,vScale,vScalefact=1,moveStep0,moveStep,Vmin,Vmax,rng=0;
 	private Vect camEye,camEye0=new Vect(-.8,-2.5,1.5).times(2), target,target0=new Vect(0,0,0),upVect,upVect0=new Vect(0,0,1);
-	public boolean meshDrawn = false,meshLoaded,axesShown,meshShown,fieldShown,runMotor,nodeLableShown;
+	public boolean meshDrawn = false,meshLoaded,axesShown,meshShown,fieldShown,runMotor,nodeLableShown,elemLableShown;
 	public boolean[] setRegion;
 	
 	public String bunFilePath, dataFilePath, fluxFilePath, fluxFilePath1,
@@ -322,10 +322,16 @@ public class ViewingPanel extends JPanel implements ActionListener {
 		
 		this.bNodeLabel = new ButtonIcon("");
 		this.bNodeLabel.setPreferredSize(new Dimension(30, 30));
-		this.bNodeLabel.setImageIcon("nodeid.jpg","Show/Hide node ids");
+		this.bNodeLabel.setImageIcon("node_id.jpg","Show/Hide node ids");
+		
+		this.bElemLabel = new ButtonIcon("");
+		this.bElemLabel.setPreferredSize(new Dimension(30, 30));
+		this.bElemLabel.setImageIcon("elem_id.jpg","Show/Hide node ids");
 		
 		drwpNorth.add(this.bNodeLabel);
-
+		
+		drwpNorth.add(this.bElemLabel);
+		
 
 		//rubix=new RubixMove();
 		//drwpNorth.add(rubix);
@@ -454,6 +460,7 @@ public class ViewingPanel extends JPanel implements ActionListener {
 		this.bShot.addActionListener(this);
 		this.bColorChooser.addActionListener(this);
 		this.bNodeLabel.addActionListener(this);
+		this.bElemLabel.addActionListener(this);
 		
 		this.bLoadMesh.addActionListener(this);
 		
@@ -690,7 +697,14 @@ public class ViewingPanel extends JPanel implements ActionListener {
 			
 			
 			nodeLableShown=!nodeLableShown;
-			showNodeLabes(nodeLableShown);
+			showNodeLabels(nodeLableShown);
+		
+
+		}else if (e.getSource() == this.bElemLabel){
+			
+			
+			elemLableShown=!elemLableShown;
+			showElemLabels(elemLableShown);
 		
 
 		}
@@ -1153,18 +1167,32 @@ public class ViewingPanel extends JPanel implements ActionListener {
 		addRegions();
 			
 		//====
+		model.setFemCalc();
 		
 		for (int ir = 1; ir <=this.numberOfRegions; ir++){
 			for(int i=model.region[ir].getFirstEl();i<=model.region[ir].getLastEl();i++)
 			{
-				double area=model.getElementArea(i);
+				double size=0;
+				if(model.dim==2) size=model.getElementArea(i);
+				else size=model.elementVolume(i);
+
+				
+		
+				
 				int[] vertNumb=model.element[i].getVertNumb();
 
+				if(model.dim==2)
+					size=sqrt(size);
+				else 
+					size=pow(size,1./3);
+				
 				for(int j=0;j<model.nElVert;j++){
-					model.node[vertNumb[j]].minEdgeSize+=sqrt(area);
+					model.node[vertNumb[j]].minEdgeSize+=size;
 			}
 		}
 	}
+		
+
 		
 //=========
 
@@ -1547,7 +1575,7 @@ public void scaleNodalScalar(Model model){
 	}
 	
 
-	public void showNodeLabes(boolean b)
+	public void showNodeLabels(boolean b)
 	{
 		
 		
@@ -1563,7 +1591,21 @@ public void scaleNodalScalar(Model model){
 		
 	}
 	
-	
+	public void showElemLabels(boolean b)
+	{
+		
+		
+		this.group.detach();
+		for (int ir = 1; ir <=this.numberOfRegions; ir++){
+
+			if(!this.setRegion[ir]) continue;
+
+			this.surfFacets[ir].showElemLables(b);
+		}
+		this.universe.addBranchGraph(this.group);
+
+		
+	}
 	
 	
 	public void setSlider(){

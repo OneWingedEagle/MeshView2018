@@ -572,6 +572,7 @@ public class Model{
 		Vect localCo=new Vect(dim);
 		ws=8;
 		jac=femCalc.jacobian(localCo,vertexNode);
+		
 		detJac=abs(jac.determinant());
 
 		vol=detJac*ws;
