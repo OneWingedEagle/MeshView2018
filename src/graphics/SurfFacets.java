@@ -2953,7 +2953,6 @@ if(ir!=2) return;
 	
 	public void setVectField(Model model,ColorBar cBar, int fieldMode, int arrMode)
 	{
-	
 
 		this.arrMode=arrMode;
 		this.fieldMode=fieldMode;
@@ -2961,7 +2960,7 @@ if(ir!=2) return;
 				if(this.arrMode<2) setElementField2D1(model,cBar);
 			else if(this.arrMode==2) setElementField3D0(model,cBar);
 			//else if(this.arrMode==3) setElementField3D1(model,cBar);
-			else if(this.arrMode==3) setElementField3DK(model,cBar,6);
+			else if(this.arrMode==3) setElementField3DK(model,cBar,18);
 			else if(this.arrMode==4) setElementField3DArrow(model,cBar,1);
 			return;}
 		else setNodalField(model,cBar);
@@ -3551,7 +3550,7 @@ if(ir!=2) return;
 			Vect B=model.element[i].getB();
 			
 			double scale=B.norm();
-			
+
 			colors[ix]=new Color3f(cBar.getColor(scale));
 			
 			for(int j=0; j<3*K1;j++){
@@ -3639,7 +3638,7 @@ if(ir!=2) return;
 						if(index==K1) index=ix;
 							baseCoordIndices[t++]=index;
 					}
-					baseCoordIndices[t++]=ix+K-1;
+					baseCoordIndices[t++]=ix+K1-1;
 			}
 			
 			
@@ -3858,14 +3857,7 @@ private void rescaleElementField3DArrow(Model model,ColorBar cBar,double a){
 		for(int j=0;j<this.nElements;j++){	
 			if(!this.surfElements[j]) continue;
 		
-			//Matrix3d M =util.mat3dScale(new Vect(a*arrow[j].scale.el[0],a*arrow[j].scale.el[0],a*arrow[j].scale.el[1]));	
-			//trans[j].setScale(arrow[j].scale.el[1]);
-		//	trans[j].setRotation(M);
-			
-/*			arrow[j].transCone.setScale(a);
-			arrow[j].transAx.setScale(a);
-			arrow[j].tgCone.setTransform(arrow[j].transCone);
-			arrow[j].tgAx.setTransform(arrow[j].transAx);*/
+
 
 			double Vn=V[j].norm();
 			color=cBar.getColor(Vn);
@@ -4779,9 +4771,10 @@ public void rescaleVectField(Model model,ColorBar cBar,double a){
 	{
 		if(arrMode<2)
 		rescaleElementField2D(model,cBar,a);
-		else
+		else{
 		//rescaleElementField3D(model,cBar,a);
 		rescaleElementField3DK(model,cBar,a);
+		}
 		
 	}
 	else

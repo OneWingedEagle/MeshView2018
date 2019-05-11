@@ -30,9 +30,9 @@ import javax.vecmath.*;
 
 import com.sun.j3d.utils.behaviors.mouse.MouseRotate;
 import com.sun.j3d.utils.behaviors.mouse.MouseTranslate;
-import com.sun.j3d.utils.geometry.ColorCube;
-import com.sun.j3d.utils.image.TextureLoader;
-
+import com.sun.j3d.utils.picking.*; 
+import com.sun.j3d.utils.geometry.Primitive;
+import com.sun.j3d.utils.image.TextureLoader; 
 import javax.swing.BorderFactory;
 import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
@@ -46,7 +46,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 
-public class ViewingPanel extends JPanel implements ActionListener {
+public class ViewingPanel extends JPanel   implements ActionListener , MouseListener{
 	public ButtonIcon bShowAxes,bShowMesh,bShowField,bDeform,bAnimation,bShot,bNodeLabel,bElemLabel;
 	public Button bLoadMesh, bClear,bNavL, bNavR,bChangeBackground,bRotate,bApplyVscale, 
 	bNavU ,bNavD,bNavZoomIn,bNavZoomOut,bFindValue,bColorChooser;
@@ -105,7 +105,7 @@ public class ViewingPanel extends JPanel implements ActionListener {
 	public JSlider jslider; 
 	private AmbientLight lightAmb;
 	private DirectionalLight[] light;
-
+	PickCanvas  pickCanvas;
 
 	public ViewingPanel() {
 		
@@ -420,6 +420,11 @@ public class ViewingPanel extends JPanel implements ActionListener {
 			
 			
 			
+//	pickCanvas = new PickCanvas(canvas, group);
+
+//	    pickCanvas.setMode(PickCanvas.BOUNDS);
+	    
+//	    canvas.addMouseListener(this); 
 			
 		
 		// Constructing SimpleUniverse ===================== end
@@ -525,7 +530,7 @@ public class ViewingPanel extends JPanel implements ActionListener {
 		// far way objects are not shown
 		view.setBackClipDistance(100.0d);
 		// very close objects are also clipped
-		view.setFrontClipDistance(0.001d);             
+		view.setFrontClipDistance(0.00001d);             
 	//	this.blockGroup = new TransformGroup();
 	//	this.univGroup.addChild(this.blockGroup);
 		this.cartesian = new Cartesian(this.spaceBoundary, Color.red, Color.green.darker(),
@@ -1717,6 +1722,64 @@ public void stressMode() {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		 pickCanvas.setShapeLocation(e);
+
+		    PickResult result = pickCanvas.pickClosest();
+
+		    if (result == null) {
+
+		       System.out.println("Nothing picked");
+
+		    } else {
+
+		       Primitive p = (Primitive)result.getNode(PickResult.PRIMITIVE);
+
+		       Shape3D s = (Shape3D)result.getNode(PickResult.SHAPE3D);
+		    
+			       if (p != null) {
+
+		          System.out.println(p.getClass().getName());
+
+		       } else if (s != null) {
+
+		             System.out.println(s.getClass().getName());
+
+		       } else{
+
+		          System.out.println("null");
+
+		       }
+
+		    } 
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

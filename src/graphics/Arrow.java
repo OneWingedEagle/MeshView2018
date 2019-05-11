@@ -6,6 +6,7 @@ import math.util;
 import java.awt.Color;
 
 import javax.media.j3d.Appearance;
+import javax.media.j3d.ColoringAttributes;
 import javax.media.j3d.GeometryArray;
 import javax.media.j3d.IndexedLineArray;
 import javax.media.j3d.IndexedQuadArray;
@@ -26,10 +27,14 @@ public class Arrow extends TransformGroup{
 	public Vect scale=new Vect(1,1);
 	public Arrow(int mode){
 		this.mode=mode;	
-
+		initialize();
 	}
 	
 	private void initialize(){
+		
+		
+		setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+
 
 	double base=0,height=0;
 
@@ -71,7 +76,9 @@ public class Arrow extends TransformGroup{
 			 
 			    Appearance app = new Appearance();
 				app.setCapability(Appearance.ALLOW_MATERIAL_WRITE);
+				
 
+				
 				
 			    Color3f color3=new  Color3f(Color.red);
 			    
@@ -87,6 +94,13 @@ public class Arrow extends TransformGroup{
 			    TransparencyAttributes tAtt =new TransparencyAttributes(TransparencyAttributes.NONE,0);
 			    app.setTransparencyAttributes(tAtt);
 			    
+				ColoringAttributes ca=new  ColoringAttributes(color3, ColoringAttributes.SHADE_GOURAUD);
+				
+				ca.setCapability(ColoringAttributes.ALLOW_COLOR_READ);
+				ca.setCapability(ColoringAttributes.ALLOW_COLOR_WRITE);
+				
+			    app.setColoringAttributes(ca);
+			    
 			    arrowShape=new Shape3D(pyramid,app);
 			   
 			    addChild(arrowShape);
@@ -94,10 +108,11 @@ public class Arrow extends TransformGroup{
 	
 	
 	public void setColor(Color color){
-		
-		  Color3f color3=new  Color3f(color);
 
-		arrowShape.getAppearance().getColoringAttributes().setColor(color3);
+		  Color3f color3=new  Color3f(color);
+		  
+		  arrowShape.getAppearance().getColoringAttributes().setColor(color3);
+
 	}
 
 
