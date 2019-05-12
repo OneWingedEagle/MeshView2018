@@ -521,16 +521,30 @@ public class ViewingPanel extends JPanel   implements ActionListener , MouseList
 			public void mouseWheelMoved(MouseWheelEvent e) {
 				int steps = e.getWheelRotation();
 				ViewingPanel.this.zoom -= steps;
-				camEye=camEye.add(target.sub(camEye).times(.1*steps));
+				//camEye=camEye.add(target).sub(camEye).times(.1*steps);
+				Vect direction=target.sub(camEye);
+				
+		
+				if(ViewingPanel.this.zoom<0){
+					double slow=1./(1+log10(20+50*abs(ViewingPanel.this.zoom)));
+
+					camEye=camEye.add(direction.times(.05*steps*slow));
+				}
+				else{
+					double fast=1+log10(20+50*abs(ViewingPanel.this.zoom));
+					camEye=camEye.add(direction.times(.05*steps*fast));
+				}
+				
+				target=target0.add(camEye.sub(camEye0));
 				newViewer();
 			}
 		});
 
 		View view = this.universe.getViewer().getView();            
 		// far way objects are not shown
-		view.setBackClipDistance(100.0d);
+		view.setBackClipDistance(1000.0d);
 		// very close objects are also clipped
-		view.setFrontClipDistance(0.00001d);             
+		view.setFrontClipDistance(0.0001d);             
 	//	this.blockGroup = new TransformGroup();
 	//	this.univGroup.addChild(this.blockGroup);
 		this.cartesian = new Cartesian(this.spaceBoundary, Color.red, Color.green.darker(),
