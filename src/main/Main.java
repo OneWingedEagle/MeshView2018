@@ -2305,8 +2305,10 @@ Tdq=Tdq.times(sqrt(2.0/3));*/
 						this.thread.start();
 						this.gui.vwp.nLoadedMesh++;
 					}
-					else if (str.equals("flux")){
+					else if (str.equals("flux")|| str.equals("fluxJ")){
 						if(this.gui.vwp.nLoadedMesh>0){
+							if(str.equals("fluxJ"))
+							model.loadedFluxJ=true;
 							this.thread=new Thread(){
 								@Override
 								public void run(){
@@ -2358,24 +2360,7 @@ Tdq=Tdq.times(sqrt(2.0/3));*/
 						}
 					}
 
-/*					else if (str.equals("displacement")){
-						if(this.gui.vwp.nLoadedMesh>0){
-							this.thread=new Thread(){
-								@Override
-								public void run(){
-									//paintDisplacement(); 
-									loadNodalField(2); 
-								}
-							};
 
-							this.thread.start();
-
-						}
-						else{
-							noMeshLoaded();
-						}
-					}
-*/
 
 					else if (str.equals("nodal")){
 						
@@ -2395,39 +2380,7 @@ Tdq=Tdq.times(sqrt(2.0/3));*/
 						}
 					}
 
-/*					else if (str.equals("nodal")){
-						if(this.gui.vwp.nLoadedMesh>0){
-							this.thread=new Thread(){
-								@Override
-								public void run(){
-									loadNodalField(1); 
-								}
-							};
 
-							this.thread.start();
-
-						}
-						else{
-							noMeshLoaded();
-						}
-					}*/
-
-					else if (str.equals("surfForce_reluc")){
-						if(this.gui.vwp.nLoadedMesh>0){
-							this.thread=new Thread(){
-								@Override
-								public void run(){
-									loadNodalField(3); 
-								}
-							};
-
-							this.thread.start();
-
-						}
-						else{
-							noMeshLoaded();
-						}
-					}
 
 					else if (str.equals("temperature")){
 						if(this.gui.vwp.nLoadedMesh>0){
