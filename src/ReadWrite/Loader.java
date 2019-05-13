@@ -231,10 +231,98 @@ public class Loader {
 		boolean[] elIn=new boolean[1+model.numberOfElements];
 		for(int i=1;i<=model.numberOfElements;i++)
 			/*if(model.element[i].getRegion()>7)*/ elIn[i]=true;
-
+		if(model.loadedFluxJ)
+			return loadFluxJ(model,fluxFilePath,angDeg,elIn);
+		else
 		return loadFlux(model,fluxFilePath,angDeg,elIn);
 	}
 
+
+	
+	public boolean loadFluxJ(Model model,String fluxFilePath, double angDeg,boolean[] elementIn){
+
+		boolean rotating=true;
+			if(angDeg==0) rotating=false;
+			
+		
+
+			Mat R=new Mat();
+			if(rotating){
+
+			//	angDeg=angDeg-(int)(angDeg/360.0);
+				
+				R=util.rotMat2D(-angDeg*Math.PI/180);
+			}
+			
+			try{
+				Scanner scr=new Scanner(new FileReader(fluxFilePath));
+
+				scr.next();
+				int dim=Integer.parseInt(scr.next());
+				int L=3*(dim-1);
+				
+				int nElements=Integer.parseInt(scr.next());
+				if(nElements!=model.numberOfElements) {
+					String msg="Flux file does not match the mesh!";
+				//	throw new IllegalArgumentException(msg);
+					JOptionPane.showMessageDialog(null, msg," ", JOptionPane. INFORMATION_MESSAGE);
+				}
+				scr.nextLine();
+		
+				Vect B1=new Vect(dim);
+
+				for(int i=1;i<=model.numberOfElements;i++)
+					model.element[i].setB(B1);
+					
+		
+				
+				double Bn2,Bmax2=-1e40,Bmin2=1e40;
+
+				while(scr.hasNext()){
+					
+					int ne=Integer.parseInt(scr.next());
+
+	
+		
+						for(int j=0;j<dim;j++){					
+							B1.el[j]=Double.parseDouble(scr.next());
+						}
+
+						model.element[ne].setB(B1);
+					
+						
+						Bn2=B1.dot(B1);
+						
+						if(Bn2>Bmax2)
+							Bmax2=Bn2;
+						if(Bn2<Bmin2)
+							Bmin2=Bn2;
+
+							
+				}
+
+
+
+				model.Bmax=sqrt(Bmax2);
+				model.Bmin=sqrt(Bmin2);
+
+				scr.close();
+				
+
+
+				System.out.println("Flux was loaded from "+fluxFilePath+" to the model.");
+				return true;
+			}
+			catch(IOException e){
+				//System.err.println("Error in loading stress file.");
+				e.printStackTrace();
+
+			return false;
+			}
+
+
+		}	
+	
 public boolean loadFlux(Model model,String fluxFilePath, double angDeg,boolean[] elementIn){
 
 boolean rotating=true;

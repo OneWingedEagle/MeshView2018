@@ -73,7 +73,7 @@ public class Element {
 
 	public void setB(Vect B){
 
-		this.B=B;
+		this.B=B.deepCopy();
 
 	}
 	

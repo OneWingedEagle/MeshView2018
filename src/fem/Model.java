@@ -49,6 +49,7 @@ public class Model{
 	public String eddyFolder,filePath,meshFilePath,dataFilePath,fileCommon,fileExtension,
 	fluxFilePath,eddyFilePath,fluxFolder,animDataFolder,chosenNodeCoord;
 
+	public boolean loadedFluxJ=false;
 	public Vect center;
 	
 	public Model(){}
