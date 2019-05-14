@@ -79,7 +79,7 @@ public class ViewingPanel extends JPanel   implements ActionListener , MouseList
 	public Canvas3D canvas;
 	public int nChosenRegion=0, nBoundary = 6;
 	public int decimal = 3, numberOfElements, numberOfRegions;
-	public double  scaleFactor,vScale0=1,vScale,vScalefact=1,moveStep0,moveStep,Vmin,Vmax,rng=0;
+	public double  scaleFactor,vScale0=1,vScale,vScalefact=1,moveStep0,moveStep,Vmin,Vmax,VminV,VmaxV,rng=0;
 	private Vect camEye,camEye0=new Vect(-.8,-2.5,1.5).times(2), target,target0=new Vect(0,0,0),upVect,upVect0=new Vect(0,0,1);
 	public boolean meshDrawn = false,meshLoaded,axesShown,meshShown,fieldShown,runMotor,nodeLableShown,elemLableShown;
 	public boolean[] setRegion;
@@ -1466,8 +1466,10 @@ public class ViewingPanel extends JPanel   implements ActionListener , MouseList
 		else if(mode==3){
 		}
 		else if(mode==4){
-			this.Vmin=model.Bmin;
-			this.Vmax=model.Bmax;
+			this.VminV=model.VminV;
+			this.VmaxV=model.VmaxV;
+			this.Vmin=model.Vmin;
+			this.Vmax=model.Vmax;
 		}
 	}
 	
@@ -1631,10 +1633,11 @@ public void scaleNodalScalar(Model model){
 		
 		DecimalFormat df=new DecimalFormat("0.00E00");
 		double sc=1;
-			if(this.Vmax>0) sc=1.0/this.Vmax;
+			if(this.VmaxV>0) sc=1.0/this.VmaxV;
 
 		vScale0=sc;
 		vScale=sc;
+	 	util.pr(vScale);
 
 		this.jslider.setMinimum(1);
 		this.jslider.setMaximum(100);

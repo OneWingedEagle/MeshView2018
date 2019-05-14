@@ -28,9 +28,9 @@ public class Model{
 	private Calculator femCalc=new Calculator();
 	public Loader loader=new Loader();
 	public Writer writer=new Writer();
-	public double scaleFactor,Bmax1=0,Bmin1=0,Bmax,Bmin,stressMax=0,nodalScalarMax=0,
+	public double scaleFactor/*,BmaxV=0,BminV=0,Bmax,Bmin*/,Vmax=0,Vmin=0,VmaxV=0,VminV=0,stressMax=0,nodalScalarMax=0,
 	stressMin,nodalScalarMin=0,TempMin, TempMax,Jmin,Jmax,Jemin,Jemax,maxDim,minEdgeLength,maxEdgeLength,
-	FedMin,uMin=0,uMax=0,AuMax,nodalValueMax,defScale;
+	FedMin,uMin=0,uMax=0,AuMax,nodalValueMax,defScale,fluxScale=1.;
 	public int numberOfUnknownEdges,numberOfKnownEdges,numberOfVarNodes
 	,numberOfKnownPhis,numberOfUnknowns,analysisMode,stressViewCode,nodalStressMaxCode
 	,numberOfUnknownU,numberOfUnknownUcomp,numberOfUnknownA,numberOfUnknownAcomp,defMode, nRotReg;
@@ -727,8 +727,8 @@ public class Model{
 			if(Bn2<Bmin2)
 				Bmin2=Bn2;}
 
-		Bmax=sqrt(Bmax2);
-		Bmin=sqrt(Bmin2);
+		Vmax=sqrt(Bmax2);
+		Vmin=sqrt(Bmin2);
 
 		setAuMax();
 

@@ -1,6 +1,7 @@
 package ReadWrite;
 
 
+import static java.lang.Math.pow;
 import static java.lang.Math.sqrt;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -146,7 +147,7 @@ public class Loader {
 				}
 				else if(nx==6){
 					cc=-100;
-					util.pr(nx);
+			
 					int[] rgb=new int[3];
 					rgb[0]=Integer.parseInt(str[nx-3]);
 					rgb[1]=Integer.parseInt(str[nx-2]);
@@ -303,8 +304,11 @@ public class Loader {
 
 
 
-				model.Bmax=sqrt(Bmax2);
-				model.Bmin=sqrt(Bmin2);
+				model.Vmax=sqrt(Bmax2);
+				model.Vmin=sqrt(Bmin2);
+				model.VmaxV=Math.pow(model.Vmax,model.fluxScale);
+			 	model.VminV=Math.pow(model.Vmin,model.fluxScale);
+
 
 				scr.close();
 				
@@ -342,7 +346,7 @@ boolean rotating=true;
 		BufferedReader br = new BufferedReader(fr);
 		String line=br.readLine();
 		 line=br.readLine();
-		util.pr(line);
+	
 		int dim=Integer.parseInt(line);
 		line=br.readLine();
 		int nElements=Integer.parseInt(line);
@@ -400,8 +404,13 @@ boolean rotating=true;
 		}
 
 
-		model.Bmax=sqrt(Bmax2);
-		model.Bmin=sqrt(Bmin2);
+		model.Vmax=sqrt(Bmax2);
+		model.Vmin=sqrt(Bmin2);
+		
+		model.VmaxV=Math.pow(model.Vmax,model.fluxScale);
+	 	model.VminV=Math.pow(model.Vmin,model.fluxScale);
+
+
 		br.close();
 fr.close();
 		System.out.println("Flux was loaded from "+fluxFilePath+" to the model.");

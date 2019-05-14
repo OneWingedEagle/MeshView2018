@@ -3551,6 +3551,8 @@ if(ir!=2) return;
 			
 			double scale=B.norm();
 
+			double scaleV=pow(scale,model.fluxScale);
+
 			colors[ix]=new Color3f(cBar.getColor(scale));
 			
 			for(int j=0; j<3*K1;j++){
@@ -3575,7 +3577,7 @@ if(ir!=2) return;
 			Vect P=model.getElementCenter(i).v3();
 
 			for(int j=0; j<K;j++){
-				Vect v=R.mul(av[j].times(scale));
+				Vect v=R.mul(av[j].times(scaleV));
 				coords[p]=new P3f(P.add(v));
 				
 				p++;
@@ -3791,7 +3793,7 @@ if(ir!=2) return;
 		else if(mode==1) { Vmax=model.FmsMax;}
 		else if(mode==2) { Vmax=model.uMax;}
 		else if(mode==3) { Vmax=model.FedMax;}
-		else if(mode==4) */{ Vmax=model.Bmax;}
+		else if(mode==4) */{ Vmax=model.VmaxV;}
 
 		//if(Vmax>0)
 		//	vScale=.2*(model.minEdgeLength+model.maxEdgeLength)/Vmax;
@@ -3815,7 +3817,7 @@ if(ir!=2) return;
 			
 			if(model.fluxNormalized){
 				
-				if(Vn/model.Bmax>1e-2)
+				if(Vn/model.VmaxV>1e-2)
 				a=1./10;
 				else
 					a=1./100;
@@ -4838,7 +4840,7 @@ public void rescaleElementField3D(Model model,ColorBar cBar,double a){
 			
 			if(model.fluxNormalized){
 
-				if(scale/model.Bmax>1e-2)
+				if(scale/model.VmaxV>1e-2)
 				scale=vScale/10;
 				else
 					scale=vScale/100;
@@ -4921,7 +4923,8 @@ public void rescaleElementField3DK(Model model,ColorBar cBar,double a){
 			Vect B=model.element[i].getB();
 			
 			double scale=B.norm();
-			
+
+			double scaleV=pow(scale,model.fluxScale);
 
 			edgeColors[ix]=new Color3f(cBar.getColor(scale).darker());
 			if(arrMode==3)
@@ -4937,10 +4940,10 @@ public void rescaleElementField3DK(Model model,ColorBar cBar,double a){
 			
 			if(model.fluxNormalized){
 
-				if(scale/model.Bmax>1e-2)
-				scale=vScale/10;
+				if(scaleV/model.VmaxV>1e-2)
+				scaleV=vScale/10;
 				else
-					scale=vScale/100;
+					scaleV=vScale/100;
 					
 			}
 			
@@ -4949,9 +4952,9 @@ public void rescaleElementField3DK(Model model,ColorBar cBar,double a){
 			for(int j=0; j<K;j++){
 				Vect v=null;
 				if(anglePi)
-					v=av[j].times(-scale);
+					v=av[j].times(-scaleV);
 				else
-					v=R.mul(av[j].times(scale));
+					v=R.mul(av[j].times(scaleV));
 				coords[p]=new P3f(P.add(v));		
 								
 				p++;
