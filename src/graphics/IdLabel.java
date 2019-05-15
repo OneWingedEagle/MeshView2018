@@ -24,9 +24,6 @@ import javax.vecmath.Vector3f;
 
 import com.sun.j3d.utils.geometry.Text2D;
 
-import javafx.scene.Node;
-
-
 
 public class IdLabel extends TransformGroup{
 	//Text2D idLabel;
