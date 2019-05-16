@@ -2308,7 +2308,9 @@ Tdq=Tdq.times(sqrt(2.0/3));*/
 					else if (str.equals("flux")|| str.equals("fluxJ")){
 						if(this.gui.vwp.nLoadedMesh>0){
 							if(str.equals("fluxJ"))
-							model.loadedFluxJ=true;
+								model.loadedFluxJ=true;
+							else
+								model.loadedFluxJ=false;
 							this.thread=new Thread(){
 								@Override
 								public void run(){
