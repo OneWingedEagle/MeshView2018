@@ -118,6 +118,8 @@ public class SurfFacets extends TransformGroup{
 		this.nr=ir;
 		
 		
+		this.nElements=model.region[ir].getLastEl()-this.nFirst+1;
+		if(this.nElements==0) return;
 
 		util.pr("Drawing mesh...");
 		this.elCode=model.elCode;
@@ -666,7 +668,7 @@ if(ir!=2) return;
 		
 
 		this.nFirst=model.region[ir].getFirstEl();
-		this.nElements=model.region[ir].getLastEl()-this.nFirst+1;
+
 		if(this.nElements==0) return;
 		int nEdge=model.numberOfEdges;
 
@@ -817,6 +819,11 @@ if(ir!=2) return;
 			this.surfVertNumb[i]=surfVertNumb1[i];
 
 
+
+		surfElements=new boolean[this.nElements];
+		for(int j=0;j<surfElements.length;j++){
+			surfElements[j]=true;                //<<======= Surface element plot bypassed
+		}
 
 
 		util.pr("region: ir "+ir+" , nSurfEdges: "+nx+" , nSurf3angs: "+ix);
