@@ -1193,7 +1193,7 @@ public class ViewingPanel extends JPanel   implements ActionListener , MouseList
 			{
 				double size=0;
 				if(model.dim==2) size=model.getElementArea(i);
-				else size=model.elementVolume(i);
+				else if(model.elCode==2) size=model.elementVolume(i);
 
 				
 		
@@ -1741,63 +1741,33 @@ public void stressMode() {
 		}
 	}
 
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		// TODO Auto-generated method stub
-		 pickCanvas.setShapeLocation(e);
-
-		    PickResult result = pickCanvas.pickClosest();
-
-		    if (result == null) {
-
-		       System.out.println("Nothing picked");
-
-		    } else {
-
-		       Primitive p = (Primitive)result.getNode(PickResult.PRIMITIVE);
-
-		       Shape3D s = (Shape3D)result.getNode(PickResult.SHAPE3D);
-		    
-			       if (p != null) {
-
-		          System.out.println(p.getClass().getName());
-
-		       } else if (s != null) {
-
-		             System.out.println(s.getClass().getName());
-
-		       } else{
-
-		          System.out.println("null");
-
-		       }
-
-		    } 
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {
+	public void mouseClicked(MouseEvent arg0) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
-	public void mouseExited(MouseEvent e) {
+	public void mouseEntered(MouseEvent arg0) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
-	public void mousePressed(MouseEvent e) {
+	public void mouseExited(MouseEvent arg0) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
-	public void mouseReleased(MouseEvent e) {
+	public void mousePressed(MouseEvent arg0) {
 		// TODO Auto-generated method stub
 		
 	}
+
+	public void mouseReleased(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
 
 }
 	

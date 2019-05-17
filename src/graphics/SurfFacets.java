@@ -118,6 +118,8 @@ public class SurfFacets extends TransformGroup{
 		this.nr=ir;
 		
 		
+		this.nElements=model.region[ir].getLastEl()-this.nFirst+1;
+		if(this.nElements==0) return;
 
 		util.pr("Drawing mesh...");
 		this.elCode=model.elCode;
@@ -666,7 +668,7 @@ if(ir!=2) return;
 		
 
 		this.nFirst=model.region[ir].getFirstEl();
-		this.nElements=model.region[ir].getLastEl()-this.nFirst+1;
+
 		if(this.nElements==0) return;
 		int nEdge=model.numberOfEdges;
 
@@ -787,8 +789,41 @@ if(ir!=2) return;
 
 
 
-
 		this.nSurf3angs=ix;
+		
+		int[] map=new int[model.numberOfNodes+1];
+		boolean[] nc=new boolean[model.numberOfNodes+1];
+		int[] surfVertNumb1=new int[3*this.nSurf3angs];
+		int p=0;
+		for(int i=0;i<this.nSurf3angs;i++)
+			for(int j=0;j<3;j++){
+
+				if(!nc[surface3angNodes1[i][j]]){
+					
+					surfVertNumb1[p]=surface3angNodes1[i][j];
+					map[surfVertNumb1[p]]=p;		
+					nc[surface3angNodes1[i][j]]=true;
+					
+					p++;
+
+				}
+			}
+
+		this.nNodesT=p;
+
+		this.surfVertNumb=new int[this.nNodesT];
+
+		util.pr("surfVertNumb.leng "+surfVertNumb.length);
+
+		for(int i=0;i<this.nNodesT;i++)
+			this.surfVertNumb[i]=surfVertNumb1[i];
+
+
+
+		surfElements=new boolean[this.nElements];
+		for(int j=0;j<surfElements.length;j++){
+			surfElements[j]=true;                //<<======= Surface element plot bypassed
+		}
 
 
 		util.pr("region: ir "+ir+" , nSurfEdges: "+nx+" , nSurf3angs: "+ix);
@@ -2487,6 +2522,7 @@ if(ir!=2) return;
 	public void paintNodalScalar(Model model){
 
 		if(this.nElements==0) return;
+
 		
 		paintedNodal=true;
 
@@ -2511,27 +2547,7 @@ if(ir!=2) return;
 
 		Color3f[] cld=new Color3f[nNodesQ];
 	
-		/*
-	Color[] ss=new Color[8];
-	
-		ss[0]=new Color(0,153,0);
-		ss[1]=new Color(0,0,200);
-		ss[2]=new Color(255,255,0);
-		ss[3]=new Color(255,255,255);
-		ss[4]=new Color(215,119,0);
-		ss[5]=new Color(204,0,0);
-		
-		ss[6]=new Color(0,0,0);
-		*/
-		
-/*		ss[0]=new Color(204,0,0);
-		ss[1]=new Color(215,119,0);
-		ss[2]=new Color(0,0,200);
-		ss[3]=new Color(0,153,0);
-	
-		ss[4]=new Color(255,255,0);
-		ss[5]=new Color(255,255,255);
-		ss[6]=new Color(0,0,0);*/
+
 		for(int i=0;i<this.nNodesQ;i++){
 	
 
@@ -2545,11 +2561,12 @@ if(ir!=2) return;
 	//====================	
 
 		}
+		if(this.faceth!=null)
 		this.faceth.setColors(0,cld);
 		
 		
 		
-		if(model.elCode==3){
+		if(model.elCode<6){
 		
 		cld=new Color3f[nNodesT];
 
@@ -2563,10 +2580,11 @@ if(ir!=2) return;
 			ix++;
 
 		}
-		this.facet3angh.setColors(0,cld);
+		if(model.elCode==2)
+			this.facet3ang.setColors(0,cld);
+		else
+			this.facet3angh.setColors(0,cld);
 		}
-		
-
 
 		//this.surfEdges.getAppearance().setTransparencyAttributes(new TransparencyAttributes(TransparencyAttributes.BLEND_ONE,.8f));
 
