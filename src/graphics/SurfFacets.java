@@ -70,7 +70,7 @@ public class SurfFacets extends TransformGroup{
 	public int nRegNodes,vectMode;
 	public Vect[] V;
 	public double vScale=1;
-	//public int[] neNumb;
+
 	private PolygonAttributes pa;
 
 	int ii,nArrowHeadDivs;
@@ -118,6 +118,8 @@ public class SurfFacets extends TransformGroup{
 		this.nr=ir;
 		
 		
+		this.nElements=model.region[ir].getLastEl()-this.nFirst+1;
+		if(this.nElements==0) return;
 
 		util.pr("Drawing mesh...");
 		this.elCode=model.elCode;
@@ -127,7 +129,7 @@ public class SurfFacets extends TransformGroup{
 
 		}
 		else if(this.elCode==1) setFacetsQuad(model,ir,color,transp);
-		else if(this.elCode==2) setFacetsTetra(model,ir,color,transp);
+		else if(this.elCode==2) setFacetsTetra2(model,ir,color,transp);
 		else if(this.elCode==3) setFacetsWedge(model,ir,color,transp);
 		else if(this.elCode==4) setFacetsHexa(model,ir,color,transp);
 		else if(this.elCode==5) setFacetsPyramid(model,ir,color,transp);
@@ -651,7 +653,7 @@ if(ir!=2) return;
 
 
 
-	public void setFacetsTetra(Model model, int ir,Color color,double transp){
+	public void setFacetsTetra3(Model model, int ir,Color color,double transp){
 
 		 this.defScale=model.defScale;
 
@@ -666,7 +668,7 @@ if(ir!=2) return;
 		
 
 		this.nFirst=model.region[ir].getFirstEl();
-		this.nElements=model.region[ir].getLastEl()-this.nFirst+1;
+
 		if(this.nElements==0) return;
 		int nEdge=model.numberOfEdges;
 
@@ -787,8 +789,41 @@ if(ir!=2) return;
 
 
 
-
 		this.nSurf3angs=ix;
+		
+		int[] map=new int[model.numberOfNodes+1];
+		boolean[] nc=new boolean[model.numberOfNodes+1];
+		int[] surfVertNumb1=new int[3*this.nSurf3angs];
+		int p=0;
+		for(int i=0;i<this.nSurf3angs;i++)
+			for(int j=0;j<3;j++){
+
+				if(!nc[surface3angNodes1[i][j]]){
+					
+					surfVertNumb1[p]=surface3angNodes1[i][j];
+					map[surfVertNumb1[p]]=p;		
+					nc[surface3angNodes1[i][j]]=true;
+					
+					p++;
+
+				}
+			}
+
+		this.nNodesT=p;
+
+		this.surfVertNumb=new int[this.nNodesT];
+
+		util.pr("surfVertNumb.leng "+surfVertNumb.length);
+
+		for(int i=0;i<this.nNodesT;i++)
+			this.surfVertNumb[i]=surfVertNumb1[i];
+
+
+
+		surfElements=new boolean[this.nElements];
+		for(int j=0;j<surfElements.length;j++){
+			surfElements[j]=true;                //<<======= Surface element plot bypassed
+		}
 
 
 		util.pr("region: ir "+ir+" , nSurfEdges: "+nx+" , nSurf3angs: "+ix);
@@ -801,13 +836,19 @@ if(ir!=2) return;
 
 		surface3angNodes1=null;
 
-		this.facet3ang = new TriangleArray(3*this.nSurf3angs,
+		this.facet3angh = new IndexedTriangleArray(this.nNodesT,	GeometryArray.COORDINATES |
+				 GeometryArray.NORMALS |GeometryArray.COLOR_3,3*this.nSurf3angs);
+		this.facet3angh.setCapability(GeometryArray.ALLOW_COLOR_WRITE);
+		this.facet3angh.setCapability(GeometryArray.ALLOW_COORDINATE_WRITE);
+		this.facet3angh.setCapability(GeometryArray.ALLOW_NORMAL_WRITE);
+/*		this.facet3angh = new TriangleArray(3*this.nSurf3angs,
 				GeometryArray.COORDINATES | GeometryArray.NORMALS | GeometryArray.COLOR_3);	
 		
 		this.facet3ang.setCapability(GeometryArray.ALLOW_COLOR_WRITE);
 		this.facet3ang.setCapability(GeometryArray.ALLOW_COORDINATE_WRITE);
-		this.facet3ang.setCapability(GeometryArray.ALLOW_NORMAL_WRITE);
+		this.facet3ang.setCapability(GeometryArray.ALLOW_NORMAL_WRITE);*/
 
+		
 		P3f[][] vertex=new P3f[this.nSurf3angs][3];
 
 		V3f[][] normal=new V3f[this.nSurf3angs][3];
@@ -844,9 +885,9 @@ if(ir!=2) return;
 
 		for(int i=0;i<this.nSurf3angs;i++){
 			for(int j=0;j<3;j++){
-				this.facet3ang.setCoordinate(3*i+j,vertex[i][j]);
-				this.facet3ang.setNormal(3*i+j,normal[i][j]);
-				this.facet3ang.setColor(3*i+j,color3);
+				this.facet3angh.setCoordinate(3*i+j,vertex[i][j]);
+				this.facet3angh.setNormal(3*i+j,normal[i][j]);
+				this.facet3angh.setColor(3*i+j,color3);
 
 			}
 		}
@@ -955,7 +996,7 @@ if(ir!=2) return;
 		edgeApp.setPolygonAttributes(pa);
 		
 
-		this.surfFacets=new Shape3D(this.facet3ang,facetApp);
+		this.surfFacets=new Shape3D(this.facet3angh,facetApp);
 		this.surfEdges=new Shape3D(this.allEdge,edgeApp);
 		this.surfEdges.setCapability(Shape3D.ALLOW_APPEARANCE_WRITE);
 		this.surfFacets.setCapability(Shape3D.ALLOW_APPEARANCE_WRITE);
@@ -1840,12 +1881,11 @@ if(ir!=2) return;
 		int p=0;
 		for(int i=0;i<this.nSurfQuads;i++)
 			for(int j=0;j<4;j++){
-				if(nc[surfaceFacetNodesQ[i][j]]) continue;
 
 				if(nc[surfaceFacetNodesQ[i][j]]) continue;
 				surfVertNumbQ[p]=surfaceFacetNodesQ[i][j];
 				mapQ[surfVertNumbQ[p]]=p;		
-				nc[surfVertNumbQ[p]]=true;
+				nc[surfaceFacetNodesQ[i][j]]=true;
 					
 					p++;
 			
@@ -2233,6 +2273,455 @@ if(ir!=2) return;
 
 	}
 
+	public void setFacetsTetra2(Model model, int ir,Color color,double transp){
+
+		 this.defScale=model.defScale;
+		
+
+			this.nFirst=model.region[ir].getFirstEl();
+
+			if(this.nElements==0) return;
+			int nEdge=model.numberOfEdges;
+
+			int ns=4;
+			IntVect[] edgeElement=new IntVect[nEdge+1];
+			for(int i=1;i<=nEdge;i++)
+				edgeElement[i]=new IntVect(ns);
+
+
+			boolean[] edgeCounted=new boolean[nEdge+1];
+			int[] indx=new int[nEdge+1];
+			for(int i=model.region[ir].getFirstEl();i<=model.region[ir].getLastEl();i++){
+				int[] edgeNumb=model.element[i].getEdgeNumb();
+				for(int j=0;j<model.nElEdge;j++){
+					int ne=edgeNumb[j];
+
+								
+					if(indx[ne]==edgeElement[ne].length-1)
+						edgeElement[ne].extend(ns);
+
+					edgeElement[ne].el[(indx[ne]++)]=i;
+					edgeCounted[ne]=true;
+				}			
+			}
+
+			int nx=0;
+			int k;
+			boolean[] onSurf=new boolean[nEdge+1];
+
+			for(int i=1;i<=nEdge;i++){
+				if(!edgeCounted[i]) continue;
+				k=0;
+				for(int j=0;j<indx[i];j++)
+					if(edgeElement[i].el[j]>0)
+						k++;
+				int[] nn=new int[2*indx[i]];
+				int jx=0;
+				int n1=model.edge[i].endNodeNumber[0];
+				for(int j=0;j<indx[i];j++){
+					int[] edgeNumb=model.element[edgeElement[i].el[j]].getEdgeNumb();
+					for(int p=0;p<model.nElEdge;p++){
+						int ep=edgeNumb[p];
+						if(ep==i) continue;
+						if(model.edge[ep].endNodeNumber[0]==n1) 
+							nn[jx++]=model.edge[ep].endNodeNumber[1];
+						else
+							if(model.edge[ep].endNodeNumber[1]==n1) 
+								nn[jx++]=model.edge[ep].endNodeNumber[0];
+					}
+
+				}
+
+				Arrays.sort(nn);
+
+				int q=0;
+				for(int p=1;p<nn.length;p++)
+					if(nn[p]!=nn[p-1]) q++;
+
+				if(q==indx[i]){
+					onSurf[i]=true;
+					nx++;
+				}
+
+			}
+			
+	
+
+			this.nSurfEdges=nx;
+
+			int[] onSurfEdgeNumber=new int[nx+1];
+			nx=0;
+			for(int i=1;i<=nEdge;i++)
+				if(onSurf[i])
+					onSurfEdgeNumber[++nx]=i;
+
+			int[][] surface3angNodes1=new int[1+3*this.nSurfEdges][3];
+			int ix=0;		
+			for(int i=model.region[ir].getFirstEl();i<=model.region[ir].getLastEl();i++){
+
+
+				int[] vertNumb=model.element[i].getVertNumb();
+				int[] edgeNumb=model.element[i].getEdgeNumb();
+				if(onSurf[edgeNumb[0]] && onSurf[edgeNumb[1]] && onSurf[edgeNumb[2]])
+				{
+					surface3angNodes1[ix][0]=vertNumb[0];
+					surface3angNodes1[ix][1]=vertNumb[2];
+					surface3angNodes1[ix][2]=vertNumb[1];
+
+					ix++;
+				}
+				if(onSurf[edgeNumb[0]] && onSurf[edgeNumb[3]]  && onSurf[edgeNumb[4]])
+				{
+					surface3angNodes1[ix][0]=vertNumb[0];
+					surface3angNodes1[ix][1]=vertNumb[1];
+					surface3angNodes1[ix][2]=vertNumb[3];
+
+					ix++;
+				}
+				if(onSurf[edgeNumb[1]] && onSurf[edgeNumb[4]]  && onSurf[edgeNumb[5]])
+				{
+					surface3angNodes1[ix][0]=vertNumb[1];
+					surface3angNodes1[ix][1]=vertNumb[2];
+					surface3angNodes1[ix][2]=vertNumb[3];
+
+					ix++;
+				}
+
+				if(onSurf[edgeNumb[2]] && onSurf[edgeNumb[5]]  && onSurf[edgeNumb[3]])
+				{
+					surface3angNodes1[ix][0]=vertNumb[2];
+					surface3angNodes1[ix][1]=vertNumb[0];
+					surface3angNodes1[ix][2]=vertNumb[3];
+
+					ix++;
+				}
+
+
+
+			}
+
+
+			this.nSurf3angs=ix;
+	
+
+		int[][] surfaceFacetNodes=new int[1+2*this.nSurfEdges][3];
+
+
+		int[][] edgeLocalNumb={{0,1},{1,2},{2,0},{0,1},{1,3},{2,3}};
+
+		int[][] nodeLocalNumb={{0,2,1},{0,1,3},{1,2,3},{2,0,3}};
+		
+
+		int iy=0;		
+
+		for(int i=model.region[ir].getFirstEl();i<=model.region[ir].getLastEl();i++){
+
+			int[] vertNumb=model.element[i].getVertNumb();
+			int[] edgeNumb=model.element[i].getEdgeNumb();
+
+			for(int is=0;is<nodeLocalNumb.length;is++){
+				boolean b=true;
+				for(int j=0;j<2;j++)
+					if(!onSurf[edgeNumb[edgeLocalNumb[is][j]]]) {
+						b=false;
+						break;
+					}
+
+				if(b){
+					for(int j=0;j<3;j++)
+						surfaceFacetNodes[iy][j]=vertNumb[nodeLocalNumb[is][j]];
+
+					iy++;
+				}
+
+
+			}
+
+		}
+
+
+
+		this.nSurf3angs=iy;
+
+		util.pr("region: ir "+ir+" , nSurfEdges: "+nx+" , nSurf3angs: "+iy);
+
+
+
+		int[] coordIndices=new int[3*this.nSurf3angs];
+
+		int[] map=new int[model.numberOfNodes+1];
+		int[] mapEdges=new int[model.numberOfNodes+1];
+		
+		int[] surfVertNumb1=new int[3*this.nSurf3angs];
+		
+	
+		for(int i=1;i<=model.numberOfNodes;i++){
+			map[i]=-1;
+		}
+	
+		
+		boolean[] nc=new boolean[model.numberOfNodes+1];
+	
+			int p=0;
+			for(int i=0;i<this.nSurf3angs;i++)
+				for(int j=0;j<3;j++){
+
+			
+					if(nc[surfaceFacetNodes[i][j]]) continue;
+					surfVertNumb1[p]=surfaceFacetNodes[i][j];
+					map[surfVertNumb1[p]]=p;		
+					nc[surfVertNumb1[p]]=true;
+					
+					p++;
+			
+				
+				}
+			
+		 nNodesT=p;
+			
+
+			this.surfVertNumb=new int[this.nNodesT];
+
+			for(int i=0;i<this.nNodesT;i++)
+				this.surfVertNumb[i]=surfVertNumb1[i];
+
+		
+		p=0;
+		for(int i=0;i<this.nSurf3angs;i++)
+			for(int j=0;j<3;j++){
+				
+				coordIndices[p]=map[surfaceFacetNodes[i][j]];
+				p++;
+			}
+
+		P3f[] coords=new P3f[this.nNodesT];
+		for(int i=0;i<this.nNodesT;i++){
+			int nnx=surfVertNumb[i];
+			coords[i]=new P3f(model.node[nnx].getCoord());
+		}
+		
+
+		
+		util.pr(" number of nodes: "+this.surfVertNumb.length);
+
+		 p=0;
+		 
+
+		int[]  normalIndices1=new int[3*this.nSurf3angs];
+		V3f[] normals1=new V3f[this.nSurf3angs];
+		 
+
+	 for(int i=0;i<this.nSurf3angs;i++){
+			 int[] nn=new int[3];
+			 Vect[] v=new Vect[3];
+
+			 for(int j=0;j<3;j++){
+				 
+			normalIndices1[p]=i;
+			nn[j] =surfaceFacetNodes[i][j];
+		
+			v[j] =model.node[nn[j]].getCoord();
+	
+			 if(model.node[nn[j]].u!=null)
+				 v[j]= v[j].add(model.node[nn[j]].u.times(this.defScale));
+			 
+			 p++;
+			 }
+							 
+			 Vect v1=v[1].sub( v[0]);
+			 Vect v2=v[2].sub( v[0]);
+			 Vect vn=v2.cross(v1);
+			
+			 vn.normalize();
+			 
+			 for(int m=0;m<3;m++)
+			 vn.el[m]=(int)(vn.el[m]*100)*0.01;
+			 
+			 
+			 V3f nOutward=new V3f(vn);
+	
+				normals1[i]=nOutward;
+		
+		 }
+
+	 
+		List<V3f> list=new ArrayList<V3f>();
+		
+
+		Set<V3f> set = new HashSet<V3f>(list);
+		
+		ArrayList<V3f> un = new ArrayList<V3f>(set);
+		
+		
+		
+		for(int i=0;i<this.nSurf3angs;i++){
+				list.add(normals1[i]);
+		}
+		
+
+		set = new HashSet<V3f>(list);
+		
+		 un = new ArrayList<V3f>(set);
+		
+	
+		int[] key=new int[this.nSurf3angs];
+		
+		for(int i=0;i<this.nSurf3angs;i++){
+			for(int j=0;j<un.size();j++){
+				if(un.get(j).equals(list.get(i))){
+					key[i]=j;
+					break;
+				}
+			}
+		}		
+
+		V3f[] normals=new V3f[set.size()];
+
+		for(int j=0;j<un.size();j++)
+			normals[j]=un.get(j);
+		
+		int[] normalIndices =new int[3*nSurf3angs];
+		for(int i=0;i<normalIndices.length;i++)
+			normalIndices[i]=key[normalIndices1[i]];
+
+		
+		Color3f[] colors=new Color3f[nNodesT];
+
+
+		for(int i=0;i<nNodesT;i++){
+
+			colors[i]=new Color3f(color);
+		}
+
+		this.facet3angh = new IndexedTriangleArray(this.nNodesT,	GeometryArray.COORDINATES |
+				 GeometryArray.NORMALS |GeometryArray.COLOR_3,3*this.nSurf3angs);
+		this.facet3angh.setCapability(GeometryArray.ALLOW_COLOR_WRITE);
+		this.facet3angh.setCapability(GeometryArray.ALLOW_COORDINATE_WRITE);
+		this.facet3angh.setCapability(GeometryArray.ALLOW_NORMAL_WRITE);
+		
+		
+		this.facet3angh.setCoordinates(0, coords);
+		this.facet3angh.setNormals(0, normals);
+		this.facet3angh.setColors(0, colors);
+		
+		this.facet3angh.setCoordinateIndices(0, coordIndices);
+		this.facet3angh.setNormalIndices(0, normalIndices);
+		this.facet3angh.setColorIndices(0, coordIndices);
+
+		Color3f color3=new Color3f(color);
+
+
+		Appearance facetApp = new Appearance();
+		Appearance edgeApp = new Appearance();
+
+		Color3f ambientColour = new Color3f(color);
+		Color3f emissiveColour = new Color3f(0,0,0);
+		Color3f specularColour = new Color3f(.1f,.1f,.1f);
+		
+		Color3f diffuseColour =new Color3f(.8f*color3.getX(), .8f*color3.getY(), .8f*color3.getZ());
+		
+	
+		
+		float shininess = 10.0f;
+
+		Material material=new Material(ambientColour, emissiveColour,
+				diffuseColour, specularColour, shininess);
+
+		facetApp.setMaterial(material);
+		
+		facetApp.setCapability(Appearance.ALLOW_MATERIAL_READ);
+		facetApp.setCapability(Appearance.ALLOW_TRANSPARENCY_ATTRIBUTES_WRITE);
+		facetApp.setCapability(Appearance.ALLOW_MATERIAL_WRITE);
+		material.setCapability(Material.ALLOW_COMPONENT_WRITE);
+
+		color3=new Color3f(color);
+		Color3f edCol=new Color3f(color.darker().darker().darker());
+		//Color3f edCol=new Color3f(Color.black);
+		
+		this.allEdgeh=new IndexedLineArray(this.surfVertNumb.length,GeometryArray.COORDINATES,2*this.nSurfEdges);
+		this.allEdgeh.setCapability(GeometryArray.ALLOW_COLOR_WRITE);
+		this.allEdgeh.setCapability(GeometryArray.ALLOW_COORDINATE_WRITE);
+
+		P3f[] edgeCoords=new P3f[nNodesT];
+
+		
+	for(int i=0; i<nNodesT;i++)
+			edgeCoords[i]=coords[i];
+		
+	
+	int[] edgeCoordIndices=new int[2*this.nSurfEdges];
+	for(int i=0; i<nSurfEdges;i++){
+		int n1=model.edge[onSurfEdgeNumber[i+1]].endNodeNumber[0];
+		if(map[n1]>=0)
+				edgeCoordIndices[2*i]=map[n1];
+		
+		edgeCoordIndices[2*i+1]=0;
+		
+		int n2=model.edge[onSurfEdgeNumber[i+1]].endNodeNumber[1];
+
+		if(map[n2]>=0)
+			edgeCoordIndices[2*i+1]=map[n2];
+	
+	
+	}
+	    
+
+
+
+		this.allEdgeh.setCoordinates(0,edgeCoords);
+		this.allEdgeh.setCoordinateIndices(0,edgeCoordIndices);
+		
+
+
+		LineAttributes la=new LineAttributes(1.0f,LineAttributes.PATTERN_SOLID,false);
+
+		TransparencyAttributes t_attr1,t_attr2,t_attr3;
+		t_attr1 =new TransparencyAttributes(TransparencyAttributes.NONE,.0f);
+		t_attr2 =new TransparencyAttributes(TransparencyAttributes.BLEND_ONE,(float)transp);		
+		t_attr3 =new TransparencyAttributes(TransparencyAttributes.BLEND_ONE,(float)(.8*transp));	
+
+		edgeApp.setLineAttributes(la);
+		if(!model.region[ir].getMaterial().startsWith("air")){
+
+			facetApp.setTransparencyAttributes(t_attr1);
+			edgeApp.setTransparencyAttributes(t_attr1);
+		}
+		else{
+
+			facetApp.setTransparencyAttributes(t_attr2);
+			edgeApp.setTransparencyAttributes(t_attr3);
+
+		}
+
+		
+		
+		    facetApp.setRenderingAttributes(facetRA);
+		    
+		
+		ColoringAttributes ca=new  ColoringAttributes(edCol, ColoringAttributes.SHADE_GOURAUD);
+
+		ca.setCapability(ColoringAttributes.ALLOW_COLOR_WRITE);
+
+	   	edgeApp.setColoringAttributes(ca);
+	   	edgeApp.setRenderingAttributes(edgeRA);
+		
+		edgeApp.setCapability(Appearance.ALLOW_TRANSPARENCY_ATTRIBUTES_WRITE);
+		
+		facetApp.setPolygonAttributes(pa);
+		
+		edgeApp.setPolygonAttributes(pa);
+
+
+		this.surfFacets=new Shape3D(this.facet3angh,facetApp);
+		this.surfEdges=new Shape3D(this.allEdgeh,edgeApp);
+		this.surfEdges.setCapability(Shape3D.ALLOW_APPEARANCE_WRITE);
+		this.surfFacets.setCapability(Shape3D.ALLOW_APPEARANCE_WRITE);
+		
+	//	showFacets(true);
+		showEdges(true);
+
+
+	}
 
 	
 	public void render(){
@@ -2374,25 +2863,27 @@ if(ir!=2) return;
 	public void setFaceColorTetra(Color color){
 		if(this.surfFacets==null) return;
 
+		Color3f[] colorsT=new Color3f[nNodesT];
+		for(int i=0;i<nNodesT;i++){
+
+			colorsT[i]=new Color3f(color);
+		}
+
+		this.facet3angh.setColors(0, colorsT);
+		
+
 		Color3f color3=new Color3f(color);
 
-		int Nt=this.nSurf3angs;
-		int N=3*Nt;
-		Color3f[] colors=new Color3f[N];
-		for(int i=0;i<N;i++)
-			colors[i]=new Color3f(color);
-
-		this.facet3ang.setColors(0,colors);
 
 		this.surfFacets.getAppearance().getMaterial().setAmbientColor(color3);
-		this.surfFacets.getAppearance().getMaterial().setDiffuseColor(color3);
+		Color3f diffuseColour =new Color3f(.8f*color3.getX(), .8f*color3.getY(), .8f*color3.getZ());
+		this.surfFacets.getAppearance().getMaterial().setDiffuseColor(new Color3f(diffuseColour));
+
 
 
 	}
 	
 	public void setFaceColorPyramid(Color color){
-	//	if(this.surfFacets==null) 
-			//return;
 
 		Color3f color3=new Color3f(color);
 
@@ -2487,6 +2978,7 @@ if(ir!=2) return;
 	public void paintNodalScalar(Model model){
 
 		if(this.nElements==0) return;
+
 		
 		paintedNodal=true;
 
@@ -2511,45 +3003,21 @@ if(ir!=2) return;
 
 		Color3f[] cld=new Color3f[nNodesQ];
 	
-		/*
-	Color[] ss=new Color[8];
-	
-		ss[0]=new Color(0,153,0);
-		ss[1]=new Color(0,0,200);
-		ss[2]=new Color(255,255,0);
-		ss[3]=new Color(255,255,255);
-		ss[4]=new Color(215,119,0);
-		ss[5]=new Color(204,0,0);
-		
-		ss[6]=new Color(0,0,0);
-		*/
-		
-/*		ss[0]=new Color(204,0,0);
-		ss[1]=new Color(215,119,0);
-		ss[2]=new Color(0,0,200);
-		ss[3]=new Color(0,153,0);
-	
-		ss[4]=new Color(255,255,0);
-		ss[5]=new Color(255,255,255);
-		ss[6]=new Color(0,0,0);*/
+
 		for(int i=0;i<this.nNodesQ;i++){
 	
 
 			double sn=model.node[this.surfVertNumb[i]].scalar;
 			this.nodalVals[i]=sn;
 			cld[i]=new Color3f( cBar.getColor(sn));
-//======================
-			//if(sn>0)
-		//	cld[i]=new Color3f( ss[(int)(sn)-1]);
-			//else cld[i]=new Color3f(0,0,0);
-	//====================	
-
 		}
+	
+		if(this.faceth!=null)
 		this.faceth.setColors(0,cld);
 		
 		
 		
-		if(model.elCode==3){
+		if(model.elCode<6){
 		
 		cld=new Color3f[nNodesT];
 
@@ -2563,10 +3031,11 @@ if(ir!=2) return;
 			ix++;
 
 		}
-		this.facet3angh.setColors(0,cld);
+		if(model.elCode==2)
+			this.facet3ang.setColors(0,cld);
+		else
+			this.facet3angh.setColors(0,cld);
 		}
-		
-
 
 		//this.surfEdges.getAppearance().setTransparencyAttributes(new TransparencyAttributes(TransparencyAttributes.BLEND_ONE,.8f));
 
@@ -2637,9 +3106,9 @@ if(ir!=2) return;
 
 		}
 
-		if(this.elCode!=0)
+		if(this.elCode!=0 &&this.elCode!=2)
 			this.faceth.setColors(0,cld);
-			else
+			else 
 				this.facet3angh.setColors(0,cld);
 
 		this.surfEdges.getAppearance().setTransparencyAttributes(new TransparencyAttributes(TransparencyAttributes.BLEND_ONE,.8f));

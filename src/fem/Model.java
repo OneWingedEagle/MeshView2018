@@ -565,7 +565,8 @@ public class Model{
 	}
 
 	public double elementVolume(int i){
-		if(dim==0) return 0;
+		if(dim==2) return 0;
+		else if(elCode==2) return 0;
 		double vol=0;
 		Node[] vertexNode=elementNodes(i);
 		Mat jac;
