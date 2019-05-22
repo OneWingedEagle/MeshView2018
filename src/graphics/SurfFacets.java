@@ -2582,7 +2582,7 @@ if(ir!=2) return;
 		}
 		if(model.elCode==2)
 			this.facet3ang.setColors(0,cld);
-		else
+		else if(model.elCode!=4)
 			this.facet3angh.setColors(0,cld);
 		}
 
@@ -2978,7 +2978,7 @@ if(ir!=2) return;
 				if(this.arrMode<2) setElementField2D1(model,cBar);
 			else if(this.arrMode==2) setElementField3D0(model,cBar);
 			//else if(this.arrMode==3) setElementField3D1(model,cBar);
-			else if(this.arrMode==3) setElementField3DK(model,cBar,18);
+			else if(this.arrMode==3) setElementField3DK(model,cBar,6);
 			else if(this.arrMode==4) setElementField3DArrow(model,cBar,1);
 			return;}
 		else setNodalField(model,cBar);
