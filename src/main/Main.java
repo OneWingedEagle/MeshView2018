@@ -190,6 +190,8 @@ public class Main implements ActionListener, ItemListener,ChangeListener, DropTa
 	public void loadModel(){	
 
 		this.gui.vwp.loadMode();
+		
+
 
 		this.thread=new Thread(){
 
@@ -200,17 +202,22 @@ public class Main implements ActionListener, ItemListener,ChangeListener, DropTa
 
 
 				Main.this.model.loadMesh(Main.this.model.filePath);
+	
 
 
 				long m2 = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
 				System.out.println("Used memory for  model setup: "+(m2-m1)/(1024*1024)+"MB");
 
 
+				if(	Main.this.gui.vwp.plotOption.getSelectedIndex()==2)
+					Main.this.model.onlySurfaceVect=true;
+
 				if(m2<m1 || (m2-m1)/(1024*1024)<Main.this.mheavy)
 					Main.this.gui.vwp.setMesh(Main.this.model);
 				else
 					Main.this.heavy=true;
 
+				
 				Main.this.gui.setTitle("FEM Drawing Panel: "+Main.this.model.filePath);
 				Main.this.gui.repaint();
 
@@ -251,6 +258,7 @@ public class Main implements ActionListener, ItemListener,ChangeListener, DropTa
 
 				this.gui.vwp.setVectField(this.model,4);
 
+				
 			}
 
 

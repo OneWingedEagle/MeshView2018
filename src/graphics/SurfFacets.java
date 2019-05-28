@@ -58,7 +58,8 @@ public class SurfFacets extends TransformGroup{
 	private IndexedLineArray allEdgeh;
 	private IndexedLineArray arrows;
 	public int[] surfVertNumb;
-	public boolean[] surfElements;
+	public boolean[] drawVector;
+	public boolean onlySurfaceVect;
 	public double[] nodalVals;
 	public double nodalScalarScale=1,defScale;
 	public boolean showRegion,setRegion,showVectField,showRegEdge,showRegFace,allNodesVect,nodalPainted;
@@ -120,6 +121,9 @@ public class SurfFacets extends TransformGroup{
 		
 		this.nElements=model.region[ir].getLastEl()-this.nFirst+1;
 		if(this.nElements==0) return;
+		
+		
+		onlySurfaceVect=model.onlySurfaceVect;
 
 		util.pr("Drawing mesh...");
 		this.elCode=model.elCode;
@@ -134,11 +138,7 @@ public class SurfFacets extends TransformGroup{
 		else if(this.elCode==4) setFacetsHexa(model,ir,color,transp);
 		else if(this.elCode==5) setFacetsPyramid(model,ir,color,transp);
 		
-
-
-		  
-		
-		
+	
 	}
 
 
@@ -820,9 +820,10 @@ if(ir!=2) return;
 
 
 
-		surfElements=new boolean[this.nElements];
-		for(int j=0;j<surfElements.length;j++){
-			surfElements[j]=true;                //<<======= Surface element plot bypassed
+		drawVector=new boolean[this.nElements];
+		if(!onlySurfaceVect)
+		for(int j=0;j<drawVector.length;j++){
+			drawVector[j]=true;                //<<======= Surface element plot bypassed
 		}
 
 
@@ -1154,12 +1155,15 @@ if(ir!=2) return;
 				}
 			}
 
-		surfElements=new boolean[this.nElements];
-		for(int j=0;j<surfElements.length;j++){
-			surfElements[j]=true;                //<<======= Surface element plot bypassed
+		drawVector=new boolean[this.nElements];
+		util.pr(onlySurfaceVect);
+		if(!onlySurfaceVect)
+		for(int j=0;j<drawVector.length;j++){
+			drawVector[j]=true;                //<<======= Surface element plot bypassed
 		}
 
 	int kx=0;
+
 	for(int i=model.region[ir].getFirstEl();i<=model.region[ir].getLastEl();i++){
 		
 			int[] vertNumb=model.element[i].getVertNumb();
@@ -1167,15 +1171,19 @@ if(ir!=2) return;
 			for(int j=0;j<vertNumb.length;j++){
 				int nn=vertNumb[j];
 				if(nc[nn]){
-					surfElements[kx]=true;	
+					drawVector[kx]=true;	
 					break;
 				}
 			}
 			
 			kx++;
 	}
+	int px=0;
+	for(int j=0;j<drawVector.length;j++){
+		if(drawVector[j]) px++;              
+	}
 	
-
+util.pr(kx+" ------------ "+px);
 
 
 		int nNodes=p;
@@ -2978,7 +2986,7 @@ if(ir!=2) return;
 				if(this.arrMode<2) setElementField2D1(model,cBar);
 			else if(this.arrMode==2) setElementField3D0(model,cBar);
 			//else if(this.arrMode==3) setElementField3D1(model,cBar);
-			else if(this.arrMode==3) setElementField3DK(model,cBar,18);
+			else if(this.arrMode==3) setElementField3DK(model,cBar,6);
 			else if(this.arrMode==4) setElementField3DArrow(model,cBar,1);
 			return;}
 		else setNodalField(model,cBar);
@@ -3254,7 +3262,7 @@ if(ir!=2) return;
 		int ix=-1;
 		for(int i=model.region[nr].getFirstEl();i<=model.region[nr].getLastEl();i++){		
 			ix++;
-			if(!this.surfElements[ix]) continue;
+			if(!this.drawVector[ix]) continue;
 			Vect B=model.element[i].getB();
 			double scale=B.norm();
 			if( scale>0 ) 
@@ -3496,7 +3504,7 @@ if(ir!=2) return;
 		int ix=-1;
 		for(int i=model.region[nr].getFirstEl();i<=model.region[nr].getLastEl();i++){		
 			ix++;
-			if(!this.surfElements[ix]) continue;
+			if(!this.drawVector[ix]) continue;
 			Vect B=model.element[i].getB();
 			double scale=B.norm();
 			if( scale>0 ) 
@@ -3789,7 +3797,7 @@ if(ir!=2) return;
 		for(int i=model.region[nr].getFirstEl();i<=model.region[nr].getLastEl();i++)
 		{
 			kx++;
-			if(!this.surfElements[kx]) continue;
+			if(!this.drawVector[kx]) continue;
 
 				P[ix]=model.getElementCenter(i);
 				V[ix]=model.element[i].getB();
@@ -3822,7 +3830,7 @@ if(ir!=2) return;
 	Color color=Color.red.darker();
 
 		for(int j=0;j<this.nElements;j++){	
-			if(!this.surfElements[j]) continue;
+			if(!this.drawVector[j]) continue;
 
 			trans[j]=new Transform3D();
 			trans[j].setTranslation(new V3f(P[j]));
@@ -3875,7 +3883,7 @@ private void rescaleElementField3DArrow(Model model,ColorBar cBar,double a){
 	Color color=Color.red.darker();
 		
 		for(int j=0;j<this.nElements;j++){	
-			if(!this.surfElements[j]) continue;
+			if(!this.drawVector[j]) continue;
 		
 
 
