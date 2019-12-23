@@ -350,6 +350,7 @@ if(ir!=2) return;
 			ix++;
 
 		}
+		nNodesT=ix;
 
 		this.nSurf3angs=this.nElements;
 
@@ -2714,7 +2715,7 @@ if(ir!=2) return;
 	}
 	
 	public void deformReg(Model model, double defScale){
-		util.pr(defScale);
+	
 		if(model.elCode==3) { deformRegWedge(model,defScale); return;}
 		
 		P3f[] newCoord=new P3f[this.surfVertNumb.length];
@@ -2767,7 +2768,39 @@ if(ir!=2) return;
 
 		}
 	//	this.faceth.setNormals(0,normals);
+		if(this.faceth!=null)
 		this.faceth.setCoordinates(0,newCoord);
+		
+		if(this.facet3angh!=null){
+		
+			P3f[] newCoordT=new P3f[this.nNodesT];
+
+			
+		for(int i=0;i<this.nNodesT;i++)
+		{
+
+
+			Vect v=model.node[this.surfVertNumb[i+this.nNodesQ]].getCoord();
+
+
+			if(model.node[this.surfVertNumb[i+this.nNodesQ]].u!=null){
+				Vect dd=model.node[this.surfVertNumb[i+this.nNodesQ]].getU().times(defScale);
+
+				
+				v=v.add(dd);
+				
+				}
+
+
+			newCoordT[i]=new P3f(v.v3());
+
+		}
+		
+		
+		
+		this.facet3angh.setCoordinates(0,newCoordT);
+		
+		}
 		
 		this.allEdgeh.setCoordinates(0,newCoord);
 		
