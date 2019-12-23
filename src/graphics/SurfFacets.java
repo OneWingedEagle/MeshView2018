@@ -58,6 +58,8 @@ public class SurfFacets extends TransformGroup{
 	private IndexedLineArray allEdgeh;
 	private IndexedLineArray arrows;
 	public int[] surfVertNumb;
+	private int[][] surfVertNumbTets;
+
 	public boolean[] surfElements;
 	public double[] nodalVals;
 	public double nodalScalarScale=1,defScale;
@@ -742,7 +744,7 @@ if(ir!=2) return;
 			if(onSurf[i])
 				onSurfEdgeNumber[++nx]=i;
 
-		int[][] surface3angNodes1=new int[1+3*this.nSurfEdges][3];
+		int[][] surface3angNodes1=new int[this.nSurfEdges][3];
 		int ix=0;		
 		for(int i=model.region[ir].getFirstEl();i<=model.region[ir].getLastEl();i++){
 
@@ -787,6 +789,7 @@ if(ir!=2) return;
 
 		}
 
+		surfVertNumbTets=surface3angNodes1;
 
 
 		this.nSurf3angs=ix;
@@ -873,19 +876,19 @@ if(ir!=2) return;
 			}		
 		}
 
-
-
+		
 		Color3f color3=new Color3f(color);
 
 		for(int i=0;i<this.nSurf3angs;i++){
 			for(int j=0;j<3;j++){
 				this.facet3ang.setCoordinate(3*i+j,vertex[i][j]);
 				this.facet3ang.setNormal(3*i+j,normal[i][j]);
-				this.facet3ang.setColor(3*i+j,color3);
+				this.facet3ang.setColor(3*i+j,	color3);
 
 			}
 		}
-		
+
+
 		
 		Appearance facetApp = new Appearance();
 		Appearance edgeApp = new Appearance();
@@ -2526,7 +2529,7 @@ if(ir!=2) return;
 		
 		paintedNodal=true;
 
-		if(model.dim==2) {paintNodalScalar2D( model); return;}
+		if(model.dim==2 ) {paintNodalScalar2D( model); return;}
 
 		double strMax=this.nodalScalarScale*model.nodalScalarMax;
 		double strMin=this.nodalScalarScale*model.nodalScalarMin;
@@ -2540,7 +2543,7 @@ if(ir!=2) return;
 		//this.surfFacets.getAppearance().getMaterial().setDiffuseColor(new Color3f(0,0,0));
 		//this.surfFacets.getAppearance().getMaterial().setEmissiveColor(new Color3f(0,0,0));
 		//this.surfFacets.getAppearance().getMaterial().setSpecularColor(new Color3f(0,0,0));
-		this.surfFacets.getAppearance().getMaterial().setAmbientColor(new Color3f(0,0,0));
+		this.surfFacets.getAppearance().getMaterial().setAmbientColor(new Color3f(.3f,.3f,.3f));
 
 		int nNodes=this.surfVertNumb.length;
 		this.nodalVals=new double[nNodes];
@@ -2564,7 +2567,19 @@ if(ir!=2) return;
 		if(this.faceth!=null)
 		this.faceth.setColors(0,cld);
 		
-		
+		if(model.elCode==2){
+
+			for(int i=0;i<this.nSurf3angs;i++){
+				for(int j=0;j<3;j++){
+					double sn=model.node[surfVertNumbTets[i][j]].scalar;
+
+					Color3f color3=new Color3f( cBar.getColor(sn));
+					this.facet3ang.setColor(3*i+j,color3);
+
+				}
+			}
+			return;
+		}
 		
 		if(model.elCode<6){
 		
@@ -2580,9 +2595,8 @@ if(ir!=2) return;
 			ix++;
 
 		}
-		if(model.elCode==2)
-			this.facet3ang.setColors(0,cld);
-		else if(model.elCode!=4)
+	
+		 if(model.elCode!=4)
 			this.facet3angh.setColors(0,cld);
 		}
 

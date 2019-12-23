@@ -49,7 +49,7 @@ import javax.swing.ScrollPaneConstants;
 public class ViewingPanel extends JPanel   implements ActionListener , MouseListener{
 	public ButtonIcon bShowAxes,bShowMesh,bShowField,bDeform,bAnimation,bShot,bNodeLabel,bElemLabel;
 	public Button bLoadMesh, bClear,bNavL, bNavR,bChangeBackground,bRotate,bApplyVscale, 
-	bNavU ,bNavD,bNavZoomIn,bNavZoomOut,bFindValue,bColorChooser;
+	bNavU ,bNavD,bNavZoomIn,bNavZoomOut,bFindValue,bColorChooser,bApplySlider;
 	private Button bInfo,bRefresh;
 	public ButtonIcon bDefaultView,bFullScreen;
 	public JComboBox  stressDist,arrowOption,plotOption;
@@ -224,6 +224,8 @@ public class ViewingPanel extends JPanel   implements ActionListener , MouseList
 		this.tfVectorScale = new TextField("1.0");
 		this.tfVectorScale.setPreferredSize(new Dimension(55, 25));
 		
+		
+		
 		this.tfX1 = new TextField("1.0");
 		this.tfX1.setPreferredSize(new Dimension(45, 25));
 		this.tfX2 = new TextField("1.0");
@@ -241,6 +243,11 @@ public class ViewingPanel extends JPanel   implements ActionListener , MouseList
 		jslider.setMajorTickSpacing(20);
 		jslider.setValue(50);
 		jslider.setPaintTicks(true);
+		
+		this.bApplySlider = new Button();
+		this.bApplySlider.setPreferredSize(new Dimension(30, 30));
+		this.bApplySlider.setImageIcon("play.png","Apply");
+		
 		///  message frame ====
 		this.messageArea = new JTextArea();
 		this.messageArea.setBackground(Color.white);
@@ -299,6 +306,7 @@ public class ViewingPanel extends JPanel   implements ActionListener , MouseList
 		drwpNorth.add(this.tfX1);
 		drwpNorth.add(jslider);
 		drwpNorth.add(this.tfVectorScale);
+		drwpNorth.add(bApplySlider);
 		drwpNorth.add(this.bShot);
 		drwpNorth.add(this.bColorChooser);
 		
@@ -1061,7 +1069,7 @@ public class ViewingPanel extends JPanel   implements ActionListener , MouseList
 
 
 		for (int ir = 1; ir <= this.numberOfRegions; ir++){
-			if(model.region[ir].getMaterial().startsWith("air")){
+			if(model.region[ir].getMaterial().startsWith("-air")){
 				this.surfFacets[ir].showRegion=false;
 				regButton[ir].setBackground(Color.white);
 				
@@ -1290,7 +1298,6 @@ public class ViewingPanel extends JPanel   implements ActionListener , MouseList
 	
 
 	public void paintNodalScalar(Model model) {
-		
 	
 		this.fieldMode=5;
 
@@ -1301,13 +1308,14 @@ public class ViewingPanel extends JPanel   implements ActionListener , MouseList
 		//	if(ir!=1) continue;
 
 			if(setRegion[ir]){
-			this.surfFacets[ir].setEdgeColor(Color.black,.7);
+			this.surfFacets[ir].setEdgeColor(Color.black,.8);
 			this.surfFacets[ir].paintNodalScalar(model);	
 			}
 
 		}
 
-			setColorBar("Stress (MPa)",this.Vmin,this.Vmax);
+			//setColorBar("Stress (MPa)",this.Vmin,this.Vmax);
+			setColorBar("    ",this.Vmin,this.Vmax);
 
 	}
 
@@ -1511,7 +1519,8 @@ public class ViewingPanel extends JPanel   implements ActionListener , MouseList
 			cBarTitle="Reluct. Force (N)";
 		}
 		else if(fieldMode==4){
-			cBarTitle="Flux (T)";
+		//	cBarTitle="Flux (T)";
+			cBarTitle="        ";
 		}
 		else if(fieldMode==8){
 			cBarTitle="surf. Force (N)";
@@ -1637,7 +1646,6 @@ public void scaleNodalScalar(Model model){
 
 		vScale0=sc;
 		vScale=sc;
-	 	util.pr(vScale);
 
 		this.jslider.setMinimum(1);
 		this.jslider.setMaximum(100);

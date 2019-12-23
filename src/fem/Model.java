@@ -916,7 +916,7 @@ public class Model{
 	public void setNodalScalar(int mode){
 	
 		double c=1.0/nElVert;
-		double eps=1.0e-6;
+		double eps=0;//1.0e-6;
 
 		
 		int[] count=new int[this.numberOfNodes+1];
@@ -928,7 +928,7 @@ public class Model{
 
 		Vect sv=null;
 		double se=0;
-		double st=.1;
+		double st=.0;
 
 		if(mode<2 || mode==10){
 
@@ -987,11 +987,13 @@ public class Model{
 				if(abs(se)<eps) continue;
 				if(se>nodalScalarMax) nodalScalarMax=se;
 				if(se<nodalScalarMin)nodalScalarMin=se;
+
 				int[] vertNumb=element[i].getVertNumb();
 				for(int j=0;j<nElVert;j++){
 					if(abs(se)>st){
 						count[vertNumb[j]]++;
 						str[vertNumb[j]]+=c*se;
+						
 					}
 				}
 

@@ -74,7 +74,8 @@ public class Main implements ActionListener, ItemListener,ChangeListener, DropTa
 		this.gui.vwp.stressDist.addItemListener(this);
 		this.gui.vwp.bRotate.addActionListener(this);
 		this.gui.vwp.bApplyVscale.addActionListener(this);
-		this.gui.vwp.bAnimation.addActionListener(this);
+		this.gui.vwp.bAnimation.addActionListener(this);	
+		this.gui.vwp.bApplySlider.addActionListener(this);
 		
 		for(int i=0;i<3;i++)
 			for(int j=0;j<3;j++)
@@ -436,6 +437,21 @@ public class Main implements ActionListener, ItemListener,ChangeListener, DropTa
 
 		}
 
+		else if (e.getSource() == this.gui.vwp.bApplySlider){
+
+			if(interaction==0) return;
+
+			
+			this.gui.vwp.vScale=Double.parseDouble(gui.vwp.tfVectorScale.getText());
+
+
+			if(interaction==1)
+				gui.vwp.deformMesh(model);
+			else 	if(interaction==2)
+				gui.vwp.scaleVectField(model);
+			else 	if(interaction==3)
+				timeDelay=this.gui.vwp.vScale;
+		}
 
 		else if (e.getSource() == this.gui.vwp.bRotate){
 			
@@ -2464,7 +2480,7 @@ Tdq=Tdq.times(sqrt(2.0/3));*/
 		catch(Exception ex)
 		{ex.printStackTrace();}
 		
-		this.gui.vwp.vScale=.02*this.gui.vwp.vScalefact*gui.vwp.vScale0*gui.vwp.jslider.getValue();
+		this.gui.vwp.vScale=.01*this.gui.vwp.vScalefact*gui.vwp.vScale0*gui.vwp.jslider.getValue();
 
 
 		gui.vwp.tfVectorScale.setText(formatter.format(this.gui.vwp.vScale));
