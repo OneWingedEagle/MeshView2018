@@ -68,6 +68,7 @@ public class SurfFacets extends TransformGroup{
 	
 	public Arrow[] arrow;
 	private TransformGroup nodeLabels,elemLabels;
+	double slabelScale0;
 	Transform3D[] trans;
 	public int nRegNodes,vectMode;
 	public Vect[] V;
@@ -330,7 +331,7 @@ if(ir!=2) return;
 
 		}
 
-
+		nNodesT=nNodes;
 
 		int[] coordIndices=new int[3*this.nElements];
 
@@ -350,7 +351,6 @@ if(ir!=2) return;
 			ix++;
 
 		}
-		nNodesT=ix;
 
 		this.nSurf3angs=this.nElements;
 
@@ -5359,63 +5359,21 @@ int[] nn=model.getRegNodes(nr);
 			
 	}
 	
-/*private void setElementLabels(Model model){
-	
 
-		
-		this.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-
-	
-
-		Vect[] P=new Vect[model.region[nr].getNumbElements()];
-		int[] id=new int[model.region[nr].getNumbElements()];
-
-		int ix=0;
-
-		int kx=-1;
-		for(int i=model.region[nr].getFirstEl();i<=model.region[nr].getLastEl();i++)
-		{
-
-				P[ix]=model.getElementCenter(i).v3();
-				id[ix]=i;
-				ix++;
-
-
-			}
-
-	
-		
-		Transform3D trans=new Transform3D[this.nElements];
-	
-
-		for(int j=0;j<this.nElements;j++){	
-			trans[j]=new Transform3D();
-			trans[j].setTranslation(new V3f(P[j]));
-			
-				
-			NodeLabel label=new NodeLabel(id[j]);
-
-			
-
-			label.setTransform(trans[j]);
-			
-			
-			nodeLabels.addChild(nodeLabels[j]);
-			
-
-			
-		}
-
-	}
-*/
-private void setNodeLabels(Model model){
+private void setNodeLabels(Model model,double a){
 	
 	nodeLabels=new TransformGroup();
 
 	int[] nn=model.getRegNodes(nr);
 	
 	int nNodes=nn.length;
-
+	
+	slabelScale0=1e100;
+	
+for(int j=0;j<nNodes;j++)	
+	if(model.node[nn[j]].minEdgeSize<slabelScale0) slabelScale0=model.node[nn[j]].minEdgeSize;
+		
+	slabelScale0*=5;
 	
 	for(int j=0;j<nNodes;j++){	
 		
@@ -5423,7 +5381,8 @@ private void setNodeLabels(Model model){
 		
 		Vect P=model.node[nn[j]].getCoord().v3();
 		trans.setTranslation(new V3f(P));
-		trans.setScale(model.node[nn[j]].minEdgeSize);
+		//trans.setScale(model.node[nn[j]].minEdgeSize);
+		trans.setScale(slabelScale0*a);
 			
 		IdLabel label=new IdLabel(nn[j]);
 		
@@ -5437,12 +5396,12 @@ private void setNodeLabels(Model model){
 
 }
 
-private void setElenLabels(Model model){
+private void setElenLabels(Model model,double a){
 	
 	elemLabels=new TransformGroup();
 
 
-//	model.minElemSize=model.getRmax()/10;
+	double minElemSize=model.getRmax()/10;
 	
 	double size=0;
 	for(int i=model.region[nr].getFirstEl();i<=model.region[nr].getLastEl();i++)
@@ -5452,11 +5411,15 @@ private void setElenLabels(Model model){
 		
 		Vect P=model.getElementCenter(i).v3();
 		trans.setTranslation(new V3f(P));
-	
+/*	
 		if(model.dim==2)
 			size=4*sqrt(model.getElementArea(i));
 		else
-			size=4*pow(model.elementVolume(i),1./3);
+			size=4*pow(model.elementVolume(i),1./3);*/
+		
+		size=minElemSize;
+		
+		size*=a;
  		trans.setScale(size);
 			
  		IdLabel label=new IdLabel(i);
@@ -5471,14 +5434,11 @@ private void setElenLabels(Model model){
 
 }
 
-public void showNodeLables(boolean b){
-	
-	
-//	if(model.numberOfNodes>1000) return;
-	
-	if(nodeLabels==null)	
+public void showNodeLables(boolean b,double a){
+
 		
-		setNodeLabels(model);
+	if(b)
+		setNodeLabels(model,a);
 
 	if(!this.showRegion) return;
 
@@ -5492,14 +5452,14 @@ public void showNodeLables(boolean b){
 		
 }
 
-public void showElemLables(boolean b){
+public void showElemLables(boolean b,double a){
 	
 	
 //	if(model.numberOfNodes>1000) return;
 	
-	if(elemLabels==null)	
-		
-		setElenLabels(model);
+	//if(elemLabels==null)	
+		if(b)
+		setElenLabels(model,a);
 
 	if(!this.showRegion) return;
 
@@ -5512,6 +5472,37 @@ public void showElemLables(boolean b){
 
 		
 }
+
+public void rescaleIdLabels(Model model,double a){
+
+	nodeLabels=new TransformGroup();
+
+	int[] nn=model.getRegNodes(nr);
+	
+	nodeLabels.removeAllChildren();
+
+	
+	a*=slabelScale0;
+	
+	int nNodes=nn.length;
+	for(int j=0;j<nNodes;j++){	
+	
+		Transform3D trans=new Transform3D();
+
+		Vect P=model.node[nn[j]].getCoord().v3();
+		trans.setTranslation(new V3f(P));
+		trans.setScale(a);
+	
+		IdLabel label=new IdLabel(nn[j]);
+		
+
+		label.setTransform(trans);
+		
+		nodeLabels.addChild(label);
+			
+	}
+
+	}
 
 
 }

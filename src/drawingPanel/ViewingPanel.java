@@ -53,7 +53,7 @@ public class ViewingPanel extends JPanel   implements ActionListener , MouseList
 	private Button bInfo,bRefresh;
 	public ButtonIcon bDefaultView,bFullScreen;
 	public JComboBox  stressDist,arrowOption,plotOption;
-	public TextField tfVectorScale,tfX1,tfX2;;
+	public TextField tfVectorScale,tfX1,tfX2,tfScaleLabel;;
 	private JPanel  regButtonPanel ,southPanel, centerPanel,colBar,eastPanel;
 	public FindValue fv = new FindValue();
 	private JFrame messageFrame,fsFrame;
@@ -106,6 +106,7 @@ public class ViewingPanel extends JPanel   implements ActionListener , MouseList
 	private AmbientLight lightAmb;
 	private DirectionalLight[] light;
 	PickCanvas  pickCanvas;
+	Model model;
 
 	public ViewingPanel() {
 		
@@ -224,6 +225,10 @@ public class ViewingPanel extends JPanel   implements ActionListener , MouseList
 		this.tfVectorScale = new TextField("1.0");
 		this.tfVectorScale.setPreferredSize(new Dimension(55, 25));
 		
+		this.tfScaleLabel = new TextField("1.0");
+		this.tfScaleLabel.setPreferredSize(new Dimension(30, 25));
+		
+		
 		
 		
 		this.tfX1 = new TextField("1.0");
@@ -246,7 +251,13 @@ public class ViewingPanel extends JPanel   implements ActionListener , MouseList
 		
 		this.bApplySlider = new Button();
 		this.bApplySlider.setPreferredSize(new Dimension(30, 30));
-		this.bApplySlider.setImageIcon("play.png","Apply");
+		this.bApplySlider.setImageIcon("apply.png","Apply");
+		
+/*		
+		this.bScaleLabel = new Button();
+		this.bScaleLabel.setPreferredSize(new Dimension(30, 30));
+		this.bScaleLabel.setImageIcon("apply.png","Apply");*/
+		
 		
 		///  message frame ====
 		this.messageArea = new JTextArea();
@@ -330,15 +341,18 @@ public class ViewingPanel extends JPanel   implements ActionListener , MouseList
 		
 		this.bNodeLabel = new ButtonIcon("");
 		this.bNodeLabel.setPreferredSize(new Dimension(30, 30));
-		this.bNodeLabel.setImageIcon("node_id.jpg","Show/Hide node ids");
+		this.bNodeLabel.setImageIcon("node_id.jpg","Show/Hide node id");
 		
 		this.bElemLabel = new ButtonIcon("");
 		this.bElemLabel.setPreferredSize(new Dimension(30, 30));
-		this.bElemLabel.setImageIcon("elem_id.jpg","Show/Hide node ids");
+		this.bElemLabel.setImageIcon("elem_id.jpg","Show/Hide elem id");
 		
 		drwpNorth.add(this.bNodeLabel);
-		
+		drwpNorth.add(this.tfScaleLabel);
+	//	drwpNorth.add(this.bScaleLabel);
 		drwpNorth.add(this.bElemLabel);
+		
+		
 		
 
 		//rubix=new RubixMove();
@@ -480,6 +494,8 @@ public class ViewingPanel extends JPanel   implements ActionListener , MouseList
 		this.bFullScreen.addActionListener(this);
 
 		this.editReg.bApply.addActionListener(this);
+				
+	//	this.bScaleLabel.addActionListener(this);
 
 		
 		camEye=camEye0.deepCopy();
@@ -724,14 +740,17 @@ public class ViewingPanel extends JPanel   implements ActionListener , MouseList
 			
 			
 			nodeLableShown=!nodeLableShown;
-			showNodeLabels(nodeLableShown);
+			
+			double scale=Double.parseDouble(tfScaleLabel.getText());	
+			showNodeLabels(nodeLableShown,scale);
 		
 
 		}else if (e.getSource() == this.bElemLabel){
 			
-			
+			double scale=Double.parseDouble(tfScaleLabel.getText());	
+
 			elemLableShown=!elemLableShown;
-			showElemLabels(elemLableShown);
+			showElemLabels(elemLableShown,scale);
 		
 
 		}
@@ -1010,6 +1029,9 @@ public class ViewingPanel extends JPanel   implements ActionListener , MouseList
 
 
 	public void setMesh(Model model) {
+		
+		this.model=model;
+		
 		if(model.dim==3)
 			model.setEdge();
 		
@@ -1605,23 +1627,24 @@ public void scaleNodalScalar(Model model){
 	}
 	
 
-	public void showNodeLabels(boolean b)
+	public void showNodeLabels(boolean b,double a)
 	{
 		
 		
 		this.group.detach();
+		
 		for (int ir = 1; ir <=this.numberOfRegions; ir++){
 
 			if(!this.setRegion[ir]) continue;
 
-			this.surfFacets[ir].showNodeLables(b);
+			this.surfFacets[ir].showNodeLables(b,a);
 		}
 		this.universe.addBranchGraph(this.group);
 
 		
 	}
 	
-	public void showElemLabels(boolean b)
+	public void showElemLabels(boolean b,double a)
 	{
 		
 		
@@ -1630,7 +1653,7 @@ public void scaleNodalScalar(Model model){
 
 			if(!this.setRegion[ir]) continue;
 
-			this.surfFacets[ir].showElemLables(b);
+			this.surfFacets[ir].showElemLables(b,a);
 		}
 		this.universe.addBranchGraph(this.group);
 

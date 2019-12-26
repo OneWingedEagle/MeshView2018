@@ -77,6 +77,7 @@ public class Main implements ActionListener, ItemListener,ChangeListener, DropTa
 		this.gui.vwp.bAnimation.addActionListener(this);	
 		this.gui.vwp.bApplySlider.addActionListener(this);
 		
+		
 		for(int i=0;i<3;i++)
 			for(int j=0;j<3;j++)
 				for(int k=0;k<2;k++)
