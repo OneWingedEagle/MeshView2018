@@ -3019,6 +3019,7 @@ if(ir!=2) return;
 	public void setVectField(Model model,ColorBar cBar, int fieldMode, int arrMode)
 	{
 
+
 		this.arrMode=arrMode;
 		this.fieldMode=fieldMode;
 		if(fieldMode==4) {
@@ -3033,12 +3034,14 @@ if(ir!=2) return;
 	}
 	
 	public void setNodalField(Model model,ColorBar cBar){
+		
+
 		if(dim==2)
 			setNodalField2D1(model,cBar);
 		else if(this.arrMode==2)
 			setNodalField3D0(model,cBar,false);
 		else if(this.arrMode==3)
-			setNodalField3D1(model,cBar,false);
+			setNodalField3D1(model,cBar,true);
 	
 	}
 
@@ -4534,7 +4537,6 @@ private void rescaleElementField3DArrow(Model model,ColorBar cBar,double a){
 		else
 		nn=this.surfVertNumb;
 
-		
 		int N=0;
 		
 		int ix=0;
@@ -4542,8 +4544,6 @@ private void rescaleElementField3DArrow(Model model,ColorBar cBar,double a){
 			int nx=nn[i];
 			Vect v=model.node[nx].getNodalVect(mode);
 			if(v==null) {continue;}
-			
-
 			
 			double scale=v.norm();
 			if( scale>0 ) 
@@ -4557,7 +4557,7 @@ private void rescaleElementField3DArrow(Model model,ColorBar cBar,double a){
 			ix++;
 		
 		}
-		
+
 		nArrows=N;
 		
 		if(N==0) return;
@@ -5052,7 +5052,7 @@ public void rescaleElementField3DK(Model model,ColorBar cBar,double a){
 public void rescaleNodalField3D(Model model,ColorBar cBar,double a,boolean all){
 
 	int N=this.nArrows;
-	
+
 	int mode=this.fieldMode;
 
 	if(N==0) return;

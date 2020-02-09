@@ -81,7 +81,8 @@ public class ViewingPanel extends JPanel   implements ActionListener , MouseList
 	public int decimal = 3, numberOfElements, numberOfRegions;
 	public double  scaleFactor,vScale0=1,vScale,vScalefact=1,moveStep0,moveStep,Vmin,Vmax,VminV,VmaxV,rng=0;
 	private Vect camEye,camEye0=new Vect(-.8,-2.5,1.5).times(2), target,target0=new Vect(0,0,0),upVect,upVect0=new Vect(0,0,1);
-	public boolean meshDrawn = false,meshLoaded,axesShown,meshShown,fieldShown,runMotor,nodeLableShown,elemLableShown;
+	public boolean meshDrawn = false,meshLoaded,axesShown,meshShown,meshDeformed,
+			fieldShown,runMotor,nodeLableShown,elemLableShown;
 	public boolean[] setRegion;
 	
 	public String bunFilePath, dataFilePath, fluxFilePath, fluxFilePath1,
@@ -1618,12 +1619,18 @@ public void scaleNodalScalar(Model model){
 	}
 
 
-	public void deformMesh(Model model){
+	public void deformMesh(Model model,boolean reset){
 	
+		double factor=1;
+		if(reset) factor=0;
 		for(int k=1;k<=model.numberOfRegions;k++){
 			if(this.setRegion[k])
-				this.surfFacets[k].deformReg(model, this.vScale);
+				this.surfFacets[k].deformReg(model, factor*this.vScale);
 		}
+	}
+	public void deformMesh(Model model){
+		
+		deformMesh(model,false);
 	}
 	
 

@@ -51,6 +51,7 @@ public class Model{
 
 	public boolean loadedFluxJ=false;
 	public Vect center;
+
 	
 	public Model(){}
 

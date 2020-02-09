@@ -360,13 +360,18 @@ public class Main implements ActionListener, ItemListener,ChangeListener, DropTa
 	{	
 
 		if(e.getSource()==this.gui.vwp.bDeform){
+			
+			gui.vwp.meshDeformed=!gui.vwp.meshDeformed;		
+			
+			if(gui.vwp.meshDeformed){
 
 			interaction=1;
 			gui.vwp.Vmax=1e-9*(model.maxEdgeLength+model.minEdgeLength)/model.uMax;
 
 			gui.vwp.setSlider();
+			}
 
-			gui.vwp.deformMesh(model);
+			gui.vwp.deformMesh(model,	!gui.vwp.meshDeformed);
 
 
 		}
@@ -1720,7 +1725,7 @@ Tdq=Tdq.times(sqrt(2.0/3));*/
 							gui.vwp.Vmax=1e2*model.uMax;
 							gui.vwp.setSlider();
 						}
-						gui.vwp.vScale=1e7;
+					//	gui.vwp.vScale=1e7;
 						gui.vwp.deformMesh(model);
 
 
@@ -2466,8 +2471,6 @@ Tdq=Tdq.times(sqrt(2.0/3));*/
 		else
 			dir.delete();
 
-
-
 	}
 
 	public void stateChanged(ChangeEvent e) {
@@ -2480,6 +2483,7 @@ Tdq=Tdq.times(sqrt(2.0/3));*/
 		}
 		catch(Exception ex)
 		{ex.printStackTrace();}
+
 		
 		this.gui.vwp.vScale=.01*this.gui.vwp.vScalefact*gui.vwp.vScale0*gui.vwp.jslider.getValue();
 
