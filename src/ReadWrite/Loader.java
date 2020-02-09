@@ -1002,7 +1002,6 @@ fr.close();
 				//	if(model.node[nn].getR()>.059) continue;
 				
 					model.node[nn].setDeformable(true);	
-					
 						if(mode==2){
 							model.node[nn].setU(v);	
 						}
@@ -1016,6 +1015,7 @@ fr.close();
 							model.edge[nn+ned].F=v.deepCopy();
 						sn2=v.dot(v);
 			
+		
 						
 					if(sn2>smax2)
 						smax2=sn2;
