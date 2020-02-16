@@ -5370,10 +5370,12 @@ private void setNodeLabels(Model model,double a){
 	
 	slabelScale0=1e100;
 	
-for(int j=0;j<nNodes;j++)	
+for(int j=0;j<nNodes;j++)	{
+
 	if(model.node[nn[j]].minEdgeSize<slabelScale0) slabelScale0=model.node[nn[j]].minEdgeSize;
+}
 		
-	slabelScale0*=5;
+
 	
 	for(int j=0;j<nNodes;j++){	
 		

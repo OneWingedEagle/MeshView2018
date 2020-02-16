@@ -1224,7 +1224,7 @@ public class ViewingPanel extends JPanel   implements ActionListener , MouseList
 			{
 				double size=0;
 				if(model.dim==2) size=model.getElementArea(i);
-				else if(model.elCode==2) size=model.elementVolume(i);
+				else  size=model.elementVolume(i);
 
 				
 		
