@@ -1447,6 +1447,14 @@ if(ir!=2) return;
 		this.nFirst=model.region[ir].getFirstEl();
 		this.nElements=model.region[ir].getLastEl()-this.nFirst+1;
 		if(this.nElements==0) return;
+		
+
+		surfElements=new boolean[this.nElements];
+		for(int j=0;j<surfElements.length;j++){
+			surfElements[j]=true;                //<<======= Surface element plot bypassed
+		}
+
+		
 		int nEdge=model.numberOfEdges;
 
 		int ns=6;
