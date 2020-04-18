@@ -143,7 +143,7 @@ public class ViewingPanel extends JPanel   implements ActionListener , MouseList
 		
 		this.bClear = new Button();
 		this.bClear.setPreferredSize(new Dimension(30, 30));
-		this.bClear.setImageIcon("clear.jpg", "Add block");
+		this.bClear.setImageIcon("clear.jpg", "Clear");
 		
 		
 		this.bChangeBackground = new Button();

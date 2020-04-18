@@ -1743,7 +1743,7 @@ Tdq=Tdq.times(sqrt(2.0/3));*/
 
 						m+=model.nInc;
 						
-						gui.vwp.bShot.doClick();
+					///	gui.vwp.bShot.doClick();
 						try {
 							Thread.sleep(200);
 						} catch (InterruptedException e) {
@@ -1751,6 +1751,7 @@ Tdq=Tdq.times(sqrt(2.0/3));*/
 						}
 
 						ix++;
+
 					}
 				}
 
