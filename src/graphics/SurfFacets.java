@@ -5933,6 +5933,7 @@ int[] nn=model.getRegNodes(nr);
 	
 
 private void setNodeLabels(Model model,double a){
+
 	
 	nodeLabels=new TransformGroup();
 
@@ -5942,12 +5943,12 @@ private void setNodeLabels(Model model,double a){
 	
 	slabelScale0=1e100;
 	
-for(int j=0;j<nNodes;j++)	{
+	for(int j=0;j<nNodes;j++)	{
 
-	if(model.node[nn[j]].minEdgeSize<slabelScale0) slabelScale0=model.node[nn[j]].minEdgeSize;
-}
-		
-	
+		if(model.node[nn[j]].minEdgeSize<slabelScale0) slabelScale0=model.node[nn[j]].minEdgeSize;
+	}
+			
+
 	for(int j=0;j<nNodes;j++){	
 		
 		Transform3D trans=new Transform3D();
@@ -5956,7 +5957,7 @@ for(int j=0;j<nNodes;j++)	{
 		trans.setTranslation(new V3f(P));
 		//trans.setScale(model.node[nn[j]].minEdgeSize);
 		trans.setScale(slabelScale0*a);
-			
+
 		IdLabel label=new IdLabel(nn[j]);
 		
 
@@ -6016,6 +6017,7 @@ public void showNodeLables(boolean b,double a){
 	if(!this.showRegion) return;
 
 	if(b){
+
 		this.addChild(nodeLabels);
 	}else
 	{
@@ -6056,7 +6058,7 @@ public void rescaleIdLabels(Model model,double a){
 
 	
 	a*=slabelScale0;
-	
+
 	int nNodes=nn.length;
 	for(int j=0;j<nNodes;j++){	
 	

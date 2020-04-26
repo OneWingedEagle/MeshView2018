@@ -567,10 +567,26 @@ public class Model{
 
 	public double elementVolume(int i){
 		if(dim==2) return 0;
-		else if(elCode==2) return 0;
-		else if(elCode==5) return 0;
+
 		double vol=0;
 		Node[] vertexNode=elementNodes(i);
+		
+		if(elCode==2) return 0;
+		else if(elCode==5) {
+			
+			Vect v1=vertexNode[1].getCoord().sub(vertexNode[0].getCoord());
+			Vect v2=vertexNode[2].getCoord().sub(vertexNode[1].getCoord());
+			Vect v3=vertexNode[3].getCoord().sub(vertexNode[2].getCoord());
+			Vect v4=vertexNode[0].getCoord().sub(vertexNode[3].getCoord());
+			Vect v5=vertexNode[4].getCoord().sub(vertexNode[0].getCoord());
+			
+			double s=(v1.cross(v2).norm()+v3.cross(v4).norm())/2;
+			double h=v1.cross(v2).normalized().dot(v5);
+			vol=Math.abs(s*h/3);
+			return vol;
+					
+		};
+		
 		Mat jac;
 		double detJac,ws;
 		Vect localCo=new Vect(dim);
