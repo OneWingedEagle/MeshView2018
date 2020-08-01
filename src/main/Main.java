@@ -76,6 +76,7 @@ public class Main implements ActionListener, ItemListener,ChangeListener, DropTa
 		this.gui.vwp.bApplyVscale.addActionListener(this);
 		this.gui.vwp.bAnimation.addActionListener(this);	
 		this.gui.vwp.bApplySlider.addActionListener(this);
+		this.gui.vwp.bClear.addActionListener(this);
 		
 		
 		for(int i=0;i<3;i++)
@@ -458,6 +459,12 @@ public class Main implements ActionListener, ItemListener,ChangeListener, DropTa
 			else 	if(interaction==3)
 				timeDelay=this.gui.vwp.vScale;
 		}
+		else if (e.getSource() == this.gui.vwp.bClear){
+
+			interaction=0;
+
+		}
+
 
 		else if (e.getSource() == this.gui.vwp.bRotate){
 			
@@ -1681,14 +1688,16 @@ Tdq=Tdq.times(sqrt(2.0/3));*/
 				int ix=0;
 				int m=0;
 				while(true){
-					{
-
+					
+						if(interaction==0) break;
 
 						Main.wait(model.animTD);
 
 
 						if(fillT)
 							if(m>=K*(model.nEnd-model.nBegin+1)) break;
+						
+					
 
 
 						int i=m%model.nEnd+model.nBegin;
@@ -1752,9 +1761,11 @@ Tdq=Tdq.times(sqrt(2.0/3));*/
 
 						ix++;
 
-					}
+					
 				}
 
+
+				if(interaction==0) return;
 
 				if(vmode==2)
 					T.timesVoid(1e9);
