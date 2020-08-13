@@ -572,6 +572,9 @@ public class Model{
 		Node[] vertexNode=elementNodes(i);
 		
 		if(elCode==2) return 0;
+		else if( this.elCode==3) return getElementVolumePrism( i);
+	
+		
 		else if(elCode==5) {
 			
 			Vect v1=vertexNode[1].getCoord().sub(vertexNode[0].getCoord());
@@ -596,6 +599,23 @@ public class Model{
 		detJac=abs(jac.determinant());
 
 		vol=detJac*ws;
+
+		return vol;
+
+	}
+	
+	public double getElementVolumePrism(int i){
+
+		Node[] vertexNode=elementNodes(i);
+		Vect v1=vertexNode[1].getCoord().sub(vertexNode[0].getCoord());
+		Vect v2=vertexNode[2].getCoord().sub(vertexNode[0].getCoord());
+		double S=abs(v1.cross(v2).norm())/2;
+
+
+		double h=vertexNode[3].getCoord().sub(vertexNode[0].getCoord()).norm();
+		double vol=S*h;
+
+
 
 		return vol;
 

@@ -5947,7 +5947,8 @@ private void setNodeLabels(Model model,double a){
 
 		if(model.node[nn[j]].minEdgeSize<slabelScale0) slabelScale0=model.node[nn[j]].minEdgeSize;
 	}
-			
+	
+	util.pr(slabelScale0);
 
 	for(int j=0;j<nNodes;j++){	
 		

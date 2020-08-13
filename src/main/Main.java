@@ -468,9 +468,12 @@ public class Main implements ActionListener, ItemListener,ChangeListener, DropTa
 
 		else if (e.getSource() == this.gui.vwp.bRotate){
 			
-			gui.vwp.runMotor=!gui.vwp.runMotor;		
 
-			//	rotateRotor();
+			rotateRotor();
+		
+			if(false){
+				gui.vwp.runMotor=!gui.vwp.runMotor;		
+
 			if(numbRubixMove==0)
 			prepareRubix();
 			
@@ -483,12 +486,15 @@ public class Main implements ActionListener, ItemListener,ChangeListener, DropTa
 					dealRubix();
 					else
 			solveRubix();
+				
 				}
 					
+			
 			
 			};
 			
 			tr.start();
+			}
 
 		}
 
